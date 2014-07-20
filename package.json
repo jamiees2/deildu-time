@@ -2,14 +2,16 @@
   "name": "deildu-time",
   "version": "0.0.0",
   "dependencies": {
-    "express": "~4.0.0-rc2",
-    "morgan": "~1.0.0",
     "body-parser": "~1.0.0",
     "compression": "1.0.1",
-    "static-favicon": "~1.0.1",
-    "method-override": "~1.0.0",
     "errorhandler": "~1.0.0",
-    "jade": "~1.1.5"
+    "express": "~4.0.0-rc2",
+    "jade": "~1.1.5",
+    "method-override": "~1.0.0",
+    "morgan": "~1.0.0",
+    "request": "^2.37.0",
+    "static-favicon": "~1.0.1",
+    "tough-cookie": "^0.12.1"
   },
   "devDependencies": {
     "coffee-script": "~1.7.1",
