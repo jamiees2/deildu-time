@@ -4,7 +4,7 @@ deildu-time
 
 ##To Run
 
-Run `nodemon -L --watch .  --debug app.coffee`
-in one terminal
+Run `nodemon --ignore public/ app.coffee`
+in one terminal for the backend
 
-And run `gulp` in another terminal
+And run `gulp` in another terminal for frontend dev
