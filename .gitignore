@@ -32,3 +32,5 @@ vendor
 
 # The css directory is all compiled from the sass directory
 public/css
+
+public/js

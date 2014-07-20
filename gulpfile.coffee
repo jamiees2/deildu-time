@@ -8,11 +8,14 @@ minifyCss = require 'gulp-minify-css'
 rename = require 'gulp-rename'
 concat =  require 'gulp-concat'
 livereload = require 'gulp-livereload'
+coffee = require 'gulp-coffee'
+gutil = require 'gulp-util'
 
 # config to hold the path files
 paths =
   server: ['routes/**/*.js', 'app.js', 'config.js']
   client: ['./public/js/**/*.js', '!./public/js/**/*.min.js']
+  coffee: ['./public/coffee/**/*.coffee']
 
 # Made the tasks simpler and modular
 # so that every task handles a particular build/dev process
@@ -34,6 +37,14 @@ gulp.task 'lintclient', ->
     .pipe(jshint '.jshintrc')
     .pipe(jshint.reporter 'jshint-stylish')
 
+    
+
+gulp.task 'coffee', ->
+  gulp
+    .src(paths.coffee)
+    .pipe(coffee({bare: true})).on('error', gutil.log)
+    .pipe(gulp.dest('./public/js'))
+
 # Uglify the client/frontend javascript files
 gulp.task 'uglify', ->
   gulp
@@ -45,6 +56,7 @@ gulp.task 'uglify', ->
 # Concat the built javascript files from the uglify task with the vendor/lib javascript files into one file
 # Let's save the users some bandwith
 gulp.task 'concatJs', ->
+  console.log "CONCAT"
   gulp
     .src(['./public/vendor/jquery/dist/jquery.min.js', './public/vendor/bootstrap/dist/js/bootstrap.min.js', './public/js/main.min.js'])
     .pipe(concat 'app.min.js')
@@ -78,8 +90,9 @@ gulp.task 'concatCss', ->
 # Watch the various files and runs their respective tasks
 gulp.task 'watch', ->
   gulp.watch paths.server, ['lintserver']
-  gulp.watch paths.client, ['lintclient']
-  gulp.watch paths.client, ['buildJs']
+  # gulp.watch paths.client, ['lintclient']
+  # gulp.watch paths.client, ['buildJs']
+  gulp.watch paths.coffee, ['buildJs']
   gulp.watch './public/sass/**/*.scss', ['buildCss']
   gulp
     .src(['./views/**/*.jade', './public/css/**/*.min.css', './public/js/**/*.min.js'])
@@ -88,5 +101,5 @@ gulp.task 'watch', ->
 
 gulp.task 'lint', ['lintserver', 'lintclient']
 gulp.task 'buildCss', ['sass', 'css', 'concatCss']
-gulp.task 'buildJs', ['uglify', 'concatJs']
+gulp.task 'buildJs', ['coffee', 'uglify', 'concatJs']
 gulp.task 'default', ['lint', 'buildCss', 'buildJs', 'watch']
