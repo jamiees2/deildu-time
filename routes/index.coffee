@@ -20,6 +20,17 @@ getLength = (data, callback) ->
 	form.getLength (_,len) ->
 		callback(_,len,form)
 
+login = ->
+	getLength secrets.deildu, (_,len,form) ->
+		r = request.post("http://deildu.net/takelogin.php", {headers: {'content-length': len}}, (loginErr, loginResponse) ->
+			if loginErr
+				console.log loginErr
+				return
+			# console.log loginResponse.statusCode
+			# console.log loginResponse.headers
+		)
+		r._form = form
+login() # Initialize the connection immediately
 ###
 the new Router exposed in express 4
 the indexRouter handles all requests to the `/` path
@@ -35,16 +46,7 @@ indexRouter.route("/").all (req, res) ->
 
   return
 indexRouter.route("/api/list").all (req,res) ->
-	# res.json({hello: secrets.deildu.password})
-	getLength secrets.deildu, (_,len,form) ->
-		r = request.post("http://deildu.net/takelogin.php", {headers: {'content-length': len}}, (loginErr, loginResponse) ->
-			if loginErr
-				console.log loginErr
-				return
-			console.log loginResponse.statusCode
-			console.log loginResponse.headers
-			request "http://deildu.net/browse.php", (err, httpResponse, body) ->
-				res.send(body)
-		)
-		r._form = form
+	request "http://deildu.net/browse.php", (err, httpResponse, body) ->
+		res.send(body) # TODO: parse list out of body
+
 exports.indexRouter = indexRouter
