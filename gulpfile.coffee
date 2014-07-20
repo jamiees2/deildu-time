@@ -10,6 +10,7 @@ concat =  require 'gulp-concat'
 livereload = require 'gulp-livereload'
 coffee = require 'gulp-coffee'
 gutil = require 'gulp-util'
+runSequence = require('run-sequence')
 
 # config to hold the path files
 paths =
@@ -37,7 +38,7 @@ gulp.task 'lintclient', ->
     .pipe(jshint '.jshintrc')
     .pipe(jshint.reporter 'jshint-stylish')
 
-    
+
 
 gulp.task 'coffee', ->
   gulp
@@ -58,7 +59,11 @@ gulp.task 'uglify', ->
 gulp.task 'concatJs', ->
   console.log "CONCAT"
   gulp
-    .src(['./public/vendor/jquery/dist/jquery.min.js', './public/vendor/bootstrap/dist/js/bootstrap.min.js', './public/js/main.min.js'])
+    .src([
+        './public/vendor/jquery/dist/jquery.min.js',
+        './public/vendor/bootstrap/dist/js/bootstrap.min.js',
+        './public/js/main.min.js'
+      ])
     .pipe(concat 'app.min.js')
     .pipe(gulp.dest './public/js')
 
@@ -99,7 +104,10 @@ gulp.task 'watch', ->
     .pipe(watch())
     .pipe(livereload())
 
+gulp.task 'buildJs', ->
+  runSequence('coffee', 'uglify', 'concatJs')
+
 gulp.task 'lint', ['lintserver', 'lintclient']
 gulp.task 'buildCss', ['sass', 'css', 'concatCss']
-gulp.task 'buildJs', ['coffee', 'uglify', 'concatJs']
+# gulp.task 'buildJs', ['coffee', 'uglify', 'concatJs']
 gulp.task 'default', ['lint', 'buildCss', 'buildJs', 'watch']

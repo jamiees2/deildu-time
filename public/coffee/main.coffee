@@ -1,2 +1,2 @@
 $(document).ready ->
-  	console.log 'yoo0'
+  	console.log 'yoo0o'
