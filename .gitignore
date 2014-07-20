@@ -34,3 +34,5 @@ vendor
 public/css
 
 public/js
+
+secrets.coffee
