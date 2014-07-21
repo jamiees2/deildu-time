@@ -6,6 +6,10 @@ request = require("request")
 FormData = require('form-data')
 cheerio = require('cheerio')
 iconv = require('iconv')
+peerflix = require('peerflix')
+address = require('network-address')
+hat = require('hat')
+parseTorrent = require('parse-torrent')
 
 
 secrets = require("../secrets")
@@ -26,12 +30,13 @@ buildForm = (data, callback) ->
 		callback(_,len,form)
 
 
-login = ->
+login = (callback) ->
 	buildForm secrets.deildu, (_,len,form) ->
 		r = request.post("#{API_HOST}/takelogin.php", {headers: {'Content-Length': len}}, (loginErr, loginResponse) ->
 			if loginErr
 				console.log loginErr
 				return
+			callback()
 		)
 		r._form = form
 
@@ -39,8 +44,29 @@ toUtf8 = (body) ->
 	return new iconv.Iconv('iso-8859-1', 'utf-8').convert(body).toString('utf-8')
 # TODO: save cookie somewhere to log in again
 # TODO: handle login redirect errors
-login() # Login immediately
-
+login -> # Login immediately
+	request.get "#{API_HOST}/download.php/170985/Last.Week.Tonight.With.John.Oliver.S01E11.HDTV.XviD-AFG.torrent", (err, httpResponse, body) ->
+		if err
+			console.log err
+			return res.json({error: true})
+		console.log parseTorrent(body)
+		engine = peerflix(body,{index: 0, dht: false, id: '01234567890123456789'})
+		oldemit = engine.emit
+		engine.emit = ->
+			console.log arguments
+			oldemit.apply(engine, arguments)
+		href = 'http://'+address()+':'+9997+'/';
+		filename = engine.server.index.name.split('/').pop().replace(/\{|\}/g, '');
+		filelength = engine.server.index.length;
+		console.log href
+		engine.server.on 'error', ->
+			console.log "SRV ERROR"
+		engine.on 'error', ->
+			console.log "ERROR"
+		engine.on 'downloaded', ->
+			console.log engine.swarm.downloaded
+		engine.on 'peer', (addr) ->
+			console.log addr
 
 apiRouter = express.Router()
 
@@ -48,6 +74,7 @@ apiRouter.route("/api/list").all (req, res) ->
 	res.set({ 'content-type': 'application/json; charset=utf-8' })
 	request.get "#{API_HOST}/browse.php", (err, httpResponse, body) ->
 		if err
+			console.log err
 			return res.json({error: true})
 		body = toUtf8(body)
 		$ = cheerio.load(body)
@@ -81,6 +108,7 @@ apiRouter.route("/api/details/:id").all (req, res) ->
 	res.set({ 'content-type': 'application/json; charset=utf-8' })
 	request.get "#{API_HOST}/details.php?id=#{req.params.id}", (err, httpResponse, body) ->
 		if err
+			console.log err
 			return res.json({error: true})
 
 		body = toUtf8(body)
@@ -103,11 +131,25 @@ apiRouter.route("/api/details/:id").all (req, res) ->
 			# ignore snatched
 			user: td[10].text().trim()
 			file_count: parseInt(td[11].text().trim())
-		console.log obj.type
 		sharers = td[12].text().trim().split('=')[0].split(',')
 		obj.seeders = parseInt(sharers[0])
 		obj.leechers = parseInt(sharers[1])
 		res.json obj
+engine = null
+apiRouter.route("/api/download/:id/:torrent").all (req, res) ->
+	res.set({ 'content-type': 'application/json; charset=utf-8' })
+	request.get "#{API_HOST}/download.php/#{req.params.id}/#{req.params.torrent}", (err, httpResponse, body) ->
+		if err
+			console.log err
+			return res.json({error: true})
+		engine = peerflix(body,{port: 9997,index: 0, dht: false})
+		href = 'http://'+address()+':'+9997+'/';
+		filename = engine.server.index.name.split('/').pop().replace(/\{|\}/g, '');
+		filelength = engine.server.index.length;
+
+		res.json({success: true, server: href})
+
+
 
 
 exports.router = apiRouter

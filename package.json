@@ -8,11 +8,17 @@
     "errorhandler": "~1.0.0",
     "express": "~4.0.0-rc2",
     "form-data": "^0.1.4",
+    "hat": "0.0.3",
     "jade": "~1.1.5",
     "method-override": "~1.0.0",
+    "mime": "^1.2.11",
     "morgan": "~1.0.0",
+    "network-address": "0.0.4",
+    "pump": "^0.3.5",
+    "range-parser": "^1.0.0",
     "request": "^2.37.0",
     "static-favicon": "~1.0.1",
+    "torrent-stream": "git+ssh://git@github.com:jamiees2/torrent-stream.git",
     "tough-cookie": "^0.12.1"
   },
   "devDependencies": {
