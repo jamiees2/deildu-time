@@ -10,7 +10,7 @@ favicon = require("static-favicon")
 methodOverride = require("method-override")
 errorHandler = require("errorhandler")
 config = require("./config")
-routes = require("./routes")
+fs = require("fs")
 app = express()
 
 ###
@@ -19,11 +19,20 @@ Express configuration.
 app.set "port", config.server.port
 app.set "views", path.join(__dirname, "views")
 app.set "view engine", "jade"
-app.use(compress()).use(favicon()).use(logger("dev")).use(bodyParser()).use(methodOverride()).use(express.static(path.join(__dirname, "public"))).use(routes.indexRouter).use (req, res) ->
-  res.status(404).render "404",
-    title: "Not Found :("
+app
+	.use(compress())
+	.use(favicon())
+	.use(logger("dev"))
+	.use(bodyParser())
+	.use(methodOverride())
+	.use(express.static(path.join(__dirname, "public")))
+	# .use(routes.indexRouter)
+fs.readdirSync("./routes").forEach (file) ->
+  app.use(require("./routes/" + file).router);
 
-  return
+app.use (req, res) ->
+	res.status(404).render "404",
+		title: "Not Found :("
 
 app.use errorHandler()  if app.get("env") is "development"
 app.listen app.get("port"), ->
