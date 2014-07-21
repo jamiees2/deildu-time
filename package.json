@@ -14,6 +14,7 @@
     "mime": "^1.2.11",
     "morgan": "~1.0.0",
     "network-address": "0.0.4",
+    "peerflix": "git+ssh://git@github.com:jamiees2/peerflix.git",
     "pump": "^0.3.5",
     "range-parser": "^1.0.0",
     "request": "^2.37.0",
