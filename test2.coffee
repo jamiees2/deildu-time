@@ -1,5 +1,5 @@
 
-peerflix = require('./lib/peerflix')
+peerflix = require('peerflix')
 address = require('network-address')
 hat = require('hat')
 parseTorrent = require('parse-torrent')
@@ -16,17 +16,11 @@ torrent = fs.readFileSync(__dirname + '/torrents/test2.torrent')
 
 # console.log parseTorrent(torrent)
 engine = peerflix(torrent,{dht: false, id: '01234567890123456789'})
-# oldemit = engine.emit
-# engine.emit = ->
-# 	console.log arguments
-# 	oldemit.apply(engine, arguments)
 VLC_ARGS = "-q --video-on-top --play-and-exit"
 engine.on 'ready', ->
 	href = "http://localhost:#{engine.server.address().port}/"
 	# href = "http://#{address()}:#{engine.server.address().port}/"
 	console.log href
-	
-	# console.log engine.server.largest
 
 	engine.server.on 'error', ->
 		console.log "SRV ERROR"
@@ -39,6 +33,5 @@ engine.on 'ready', ->
 		vlc = proc.exec 'vlc '+href+' '+VLC_ARGS+' || '+root+' '+href+' '+VLC_ARGS+' || '+home+' '+href+' '+VLC_ARGS, (error, stdout, stderror) ->
 			if (error) 
 				process.exit(0)
-	# vlc.on 'exit', ->
-	# 	if not argv.n and argv.quit isnt false
-	# 		process.exit(0)
+		vlc.on 'exit', ->
+			process.exit(0) if not argv.n and argv.quit isnt false

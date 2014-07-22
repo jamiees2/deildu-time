@@ -9,7 +9,7 @@ iconv = require('iconv')
 peerflix = require('peerflix')
 address = require('network-address')
 hat = require('hat')
-parseTorrent = require('parse-torrent')
+proc = require('child_process')
 
 
 secrets = require("../secrets")
@@ -45,28 +45,7 @@ toUtf8 = (body) ->
 # TODO: save cookie somewhere to log in again
 # TODO: handle login redirect errors
 login -> # Login immediately
-	request.get "#{API_HOST}/download.php/170985/Last.Week.Tonight.With.John.Oliver.S01E11.HDTV.XviD-AFG.torrent", (err, httpResponse, body) ->
-		if err
-			console.log err
-			return res.json({error: true})
-		console.log parseTorrent(body)
-		engine = peerflix(body,{index: 0, dht: false, id: '01234567890123456789'})
-		oldemit = engine.emit
-		engine.emit = ->
-			console.log arguments
-			oldemit.apply(engine, arguments)
-		href = 'http://'+address()+':'+9997+'/';
-		filename = engine.server.index.name.split('/').pop().replace(/\{|\}/g, '');
-		filelength = engine.server.index.length;
-		console.log href
-		engine.server.on 'error', ->
-			console.log "SRV ERROR"
-		engine.on 'error', ->
-			console.log "ERROR"
-		engine.on 'downloaded', ->
-			console.log engine.swarm.downloaded
-		engine.on 'peer', (addr) ->
-			console.log addr
+	
 
 apiRouter = express.Router()
 
@@ -135,19 +114,33 @@ apiRouter.route("/api/details/:id").all (req, res) ->
 		obj.seeders = parseInt(sharers[0])
 		obj.leechers = parseInt(sharers[1])
 		res.json obj
-engine = null
+
+VLC_ARGS = "-q --video-on-top --play-and-exit"
 apiRouter.route("/api/download/:id/:torrent").all (req, res) ->
 	res.set({ 'content-type': 'application/json; charset=utf-8' })
 	request.get "#{API_HOST}/download.php/#{req.params.id}/#{req.params.torrent}", (err, httpResponse, body) ->
 		if err
 			console.log err
 			return res.json({error: true})
-		engine = peerflix(body,{port: 9997,index: 0, dht: false})
-		href = 'http://'+address()+':'+9997+'/';
-		filename = engine.server.index.name.split('/').pop().replace(/\{|\}/g, '');
-		filelength = engine.server.index.length;
-
-		res.json({success: true, server: href})
+		engine = peerflix(body,{dht: false, id: '01234567890123456789'})
+		engine.on 'ready', ->
+			href = "http://localhost:#{engine.server.address().port}/"
+			# href = "http://#{address()}:#{engine.server.address().port}/"
+			console.log href
+			res.json({success: true, server: href})
+			engine.server.on 'error', ->
+				console.log "SRV ERROR"
+			engine.on 'peer', ->
+				console.log "connected to peer"
+			engine.server.on 'listening', ->
+				# console.log engine.server.index
+				root = '/Applications/VLC.app/Contents/MacOS/VLC'
+				home = (process.env.HOME || '') + root
+				vlc = proc.exec 'vlc '+href+' '+VLC_ARGS+' || '+root+' '+href+' '+VLC_ARGS+' || '+home+' '+href+' '+VLC_ARGS, (error, stdout, stderror) ->
+					if (error) 
+						process.exit(0)
+				vlc.on 'exit', ->
+					process.exit(0) if not argv.n and argv.quit isnt false
 
 
 
