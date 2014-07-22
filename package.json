@@ -9,6 +9,7 @@
     "express": "~4.0.0-rc2",
     "form-data": "^0.1.4",
     "hat": "0.0.3",
+    "iconv": "^2.1.4",
     "jade": "~1.1.5",
     "method-override": "~1.0.0",
     "mime": "^1.2.11",
