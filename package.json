@@ -20,7 +20,7 @@
     "range-parser": "^1.0.0",
     "request": "^2.37.0",
     "static-favicon": "~1.0.1",
-    "torrent-stream": "git+ssh://git@github.com:jamiees2/torrent-stream.git",
+    "torrent-stream": "^0.13.5",
     "tough-cookie": "^0.12.1"
   },
   "devDependencies": {
