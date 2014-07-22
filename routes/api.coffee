@@ -139,8 +139,8 @@ apiRouter.route("/api/download/:id/:torrent").all (req, res) ->
 				vlc = proc.exec 'vlc '+href+' '+VLC_ARGS+' || '+root+' '+href+' '+VLC_ARGS+' || '+home+' '+href+' '+VLC_ARGS, (error, stdout, stderror) ->
 					if (error) 
 						process.exit(0)
-				vlc.on 'exit', ->
-					process.exit(0) if not argv.n and argv.quit isnt false
+				# vlc.on 'exit', ->
+				# 	process.exit(0) if not argv.n and argv.quit isnt false
 
 
 
