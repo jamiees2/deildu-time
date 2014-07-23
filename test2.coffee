@@ -1,5 +1,5 @@
 
-peerflix = require('peerflix')
+peerflix = require('./lib/peerflix')
 address = require('network-address')
 hat = require('hat')
 parseTorrent = require('parse-torrent')
@@ -30,8 +30,6 @@ engine.on 'ready', ->
 		# console.log engine.server.index
 		root = '/Applications/VLC.app/Contents/MacOS/VLC'
 		home = (process.env.HOME || '') + root
-		vlc = proc.exec 'vlc '+href+' '+VLC_ARGS+' || '+root+' '+href+' '+VLC_ARGS+' || '+home+' '+href+' '+VLC_ARGS, (error, stdout, stderror) ->
+		vlc = proc.exec "vlc #{href} #{VLC_ARGS} || #{root} #{href} #{VLC_ARGS} || #{home} #{href} #{VLC_ARGS}", (error, stdout, stderror) ->
 			if (error) 
 				process.exit(0)
-		vlc.on 'exit', ->
-			process.exit(0) if not argv.n and argv.quit isnt false
