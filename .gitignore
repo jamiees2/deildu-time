@@ -35,4 +35,8 @@ public/css
 
 public/js
 
-secrets.coffee
+app/secrets.coffee
+
+lib/
+
+dist/
