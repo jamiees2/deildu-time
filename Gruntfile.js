@@ -61,11 +61,6 @@ module.exports = function (grunt) {
           dest: '<%= config.dist %>/node-webkit.app/Contents/Resources/',
           filter: 'isFile',
           src: '*.icns'
-        }, {
-          expand: true,
-          cwd: 'node_modules/',
-          dest: '<%= config.dist %>/node-webkit.app/Contents/Resources/app.nw/node_modules/',
-          src: '**'
         }]
       },
       webkit: {
@@ -81,6 +76,15 @@ module.exports = function (grunt) {
           expand: true,
           cwd: '<%= config.resources %>/node-webkit/Windows/',
           dest: '<%= config.tmp %>/',
+          src: '**'
+        }]
+      },
+      copyTmpToDist: {
+
+        files: [{
+          expand: true,
+          cwd: '<%= config.tmp %>',
+          dest: '<%= config.dist %>/',
           src: '**'
         }]
       }
@@ -257,7 +261,8 @@ module.exports = function (grunt) {
     'compress:appToTmp',
     'rename:zipToApp',
     'createWindowsApp',
-    'compress:finalWindowsApp'
+    'copy:copyTmpToDist'
+    // 'compress:finalWindowsApp'
   ]);
 
   grunt.registerTask('dist-mac', [

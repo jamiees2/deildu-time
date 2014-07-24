@@ -2,6 +2,7 @@ deildu = require('../lib/deildu')
 peerflix = require('peerflix')
 fs = require('fs')
 proc = require('child_process')
+path = require('path')
 
 SingleLink = Backbone.Marionette.ItemView.extend
     tagName: "li",
@@ -55,6 +56,35 @@ view.render()
 #     view.render()
 
 VLC_ARGS = "-q --video-on-top --play-and-exit"
+startVlc = (href) ->
+    if process.platform is 'win32'
+        registry = require('windows-no-runnable').registry
+        key = null
+        if process.arch is 'x64'
+            try
+                key = registry('HKLM/Software/Wow6432Node/VideoLAN/VLC')
+            catch e
+                try
+                    key = registry('HKLM/Software/VideoLAN/VLC')
+                catch err
+        else
+            try
+                key = registry('HKLM/Software/VideoLAN/VLC')
+            catch e
+                try
+                    key = registry('HKLM/Software/Wow6432Node/VideoLAN/VLC')
+                catch err
+        if key
+            vlcPath = key['InstallDir'].value + path.sep + 'vlc'
+            VLC_ARGS = VLC_ARGS.split(' ')
+            VLC_ARGS.unshift(href)
+            proc.execFile(vlcPath, VLC_ARGS)
+    else
+        root = '/Applications/VLC.app/Contents/MacOS/VLC'
+        home = (process.env.HOME || '') + root
+        vlc = proc.exec "vlc #{href} #{VLC_ARGS} || #{root} #{href} #{VLC_ARGS} || #{home} #{href} #{VLC_ARGS}", (error, stdout, stderror) ->
+            if (error) 
+                process.exit(0)
 stream = (torrent) ->
     engine = peerflix(torrent,{dht: false, id: '01234567890123456789'})
     engine.on 'ready', ->
@@ -67,10 +97,6 @@ stream = (torrent) ->
             console.log "connected to peer"
         engine.server.on 'listening', ->
             # console.log engine.server.index
-            root = '/Applications/VLC.app/Contents/MacOS/VLC'
-            home = (process.env.HOME || '') + root
-            vlc = proc.exec 'vlc '+href+' '+VLC_ARGS+' || '+root+' '+href+' '+VLC_ARGS+' || '+home+' '+href+' '+VLC_ARGS, (error, stdout, stderror) ->
-                if (error) 
-                    process.exit(0)
+            startVlc(href)
             # vlc.on 'exit', ->
             #   process.exit(0) if not argv.n and argv.quit isnt false
