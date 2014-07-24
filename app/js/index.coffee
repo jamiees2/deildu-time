@@ -16,17 +16,43 @@ SingleLink = Backbone.Marionette.ItemView.extend
             stream(torrent)
 
 
-ListView = Backbone.Marionette.CollectionView.extend
+class ListView extends Backbone.Marionette.CollectionView
     tagName: 'ul',
     childView: SingleLink
+    initialize: ->
+        $(window).on('scroll',@load)
+    load: =>
 
+        margin = 200
 
-deildu.getLatest (err, data) ->
-    list = new Backbone.Collection(data)
-    (new ListView
-      collection: list,
-      el: '.feed'
-    ).render()
+        # if we are closer than 'margin' to the end of the content, load more
+        @collection.trigger "load"  if $(window.document).scrollTop() >= $(window.document).height() - $(window).height() - margin
+        return
+
+class Item extends Backbone.Model
+
+class ItemCollection extends Backbone.Collection
+    model: Item
+    initialize: ->
+        @load()
+        @on "load", @load
+        @start = 0
+    load: ->
+        deildu.getLatest @start, (err, data) =>
+            @add(data)
+            @start += 1
+list = new ItemCollection
+view = new ListView
+    collection: list,
+    el: '.feed'
+view.render()
+
+# deildu.getLatest (err, data) ->
+#     list = new ItemCollection(data)
+#     view = new ListView
+#       collection: list,
+#       el: '.feed'
+#     view.render()
 
 VLC_ARGS = "-q --video-on-top --play-and-exit"
 stream = (torrent) ->
