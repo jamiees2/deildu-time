@@ -22,7 +22,7 @@
     "iconv-lite": "^0.4.4",
     "mime": "^1.2.11",
     "network-address": "0.0.4",
-    "peerflix": "git+ssh://git@github.com:jamiees2/peerflix.git",
+    "peerflix": "git+ssh://git@github.com:jamiees2/peerflix.git#rar2",
     "pump": "^0.3.5",
     "querystring": "^0.2.0",
     "range-parser": "^1.0.0",

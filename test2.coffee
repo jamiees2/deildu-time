@@ -2,7 +2,7 @@
 peerflix = require('./lib/peerflix')
 address = require('network-address')
 hat = require('hat')
-parseTorrent = require('parse-torrent')
+# parseTorrent = require('parse-torrent')
 fs = require('fs')
 proc = require('child_process')
 
@@ -11,7 +11,7 @@ proc = require('child_process')
 
 
 
-torrent = fs.readFileSync(__dirname + '/torrents/test2.torrent')
+torrent = fs.readFileSync(__dirname + '/torrents/test.torrent')
 
 
 # console.log parseTorrent(torrent)
