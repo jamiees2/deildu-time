@@ -2,6 +2,7 @@
   "name": "package",
   "version": "0.0.0",
   "dependencies": {
-    "bootstrap": "~3.2.0"
+    "bootstrap": "~3.2.0",
+    "marionette": "~2.0.3"
   }
 }
