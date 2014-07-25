@@ -11,7 +11,7 @@ win.showDevTools()
 
 
 process.env['PATH'] += ";#{path.dirname(process.execPath)}" if process.platform is "win32"
-
+proc.spawn "unrar"
 
 class SingleLink extends Backbone.Marionette.ItemView
     tagName: "tr",
@@ -173,6 +173,7 @@ stream = (torrent) ->
     engine.on 'ready', ->
         localHref = "http://localhost:#{engine.server.address().port}/"
         remoteHref = "http://#{address()}:#{engine.server.address().port}/"
+        console.log localHref, remoteHref
         engine.server.on 'error', ->
             console.log "SRV ERROR"
         engine.on 'peer', ->
