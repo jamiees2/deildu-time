@@ -11,7 +11,6 @@ win.showDevTools()
 
 
 process.env['PATH'] += ";#{path.dirname(process.execPath)}" if process.platform is "win32"
-proc.spawn "unrar"
 
 class SingleLink extends Backbone.Marionette.ItemView
     tagName: "tr",
@@ -24,12 +23,14 @@ class SingleLink extends Backbone.Marionette.ItemView
         """)
     events: 
         "click a": "onClick"
-    onClick: ->
+    onClick: (e) ->
+        e.preventDefault()
         deildu.torrent @model.get('id'), @model.get('torrent'), (err, torrent) ->
             if err
                 console.log err
                 return
             stream(torrent)
+        @$el.addClass('success')
 
 class EmptyView extends Backbone.Marionette.ItemView
     template: "<tr><td class='center'>Nothing here</td></tr>"
@@ -54,7 +55,7 @@ class ListView extends Backbone.Marionette.CompositeView
         </div>
         <div class="row">
             <img class="center-block loading hide" id="loading" src="img/loading.gif" />
-            <table class='table table-bordered table-striped'>
+            <table class='table table-bordered table-condensed table-hover'>
                 <thead><tr>
                     <th>Name</th>
                     <th>File Count</th>
