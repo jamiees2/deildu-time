@@ -15,6 +15,11 @@
 		global.$ = $;
 		global.Backbone = Backbone;
 		global._ = _;
+
+		// Make the localStorage object global, for multiple windows
+		// var _ref;
+		// global.localStorage = (_ref = global.localStorage) != null ? _ref : window.localStorage;
+
 		require('coffee-script/register');
 		require('./js/index.coffee');
 	</script>

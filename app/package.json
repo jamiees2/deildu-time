@@ -5,9 +5,9 @@
   "single-instance": true,
   "window": {
     "title": "DeilduTime",
-    "width": 650,
+    "width": 1080,
     "height": 650,
-    "min_width": 650,
+    "min_width": 800,
     "min_height": 650,
     "toolbar": false
   },

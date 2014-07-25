@@ -14,7 +14,13 @@ process.env['PATH'] += ";#{path.dirname(process.execPath)}" if process.platform 
 
 class SingleLink extends Backbone.Marionette.ItemView
     tagName: "tr",
-    template: _.template("<td><a href='#'><%-name%></a></td><td><%-file_count%></td><td><%-category%></td>")
+    template: _.template("""
+        <td><a href='#'><%-name%></a></td>
+        <td><%-file_count%></td>
+        <td><%-category%></td>
+        <td><%-seeders%></td>
+        <td><%-leechers%></td>
+        """)
     events: 
         "click a": "onClick"
     onClick: ->
@@ -46,7 +52,14 @@ class ListView extends Backbone.Marionette.CompositeView
             </h1>
         </div>
         <div class="row">
-            <table class='table table-bordered'>
+            <table class='table table-bordered table-striped'>
+                <thead><tr>
+                    <th>Name</th>
+                    <th>File Count</th>
+                    <th>Category</th>
+                    <th>Seeders</th>
+                    <th>Leechers</th>
+                </tr></thead>
                 <tbody></tbody>
             </table>
         </div>""")
