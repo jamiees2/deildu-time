@@ -3,6 +3,7 @@ peerflix = require('peerflix')
 fs = require('fs')
 proc = require('child_process')
 path = require('path')
+address = require('network-address')
 
 nwgui = global.window.nwDispatcher.requireNwGui()
 win = nwgui.Window.get()
@@ -31,7 +32,7 @@ class SingleLink extends Backbone.Marionette.ItemView
             stream(torrent)
 
 class EmptyView extends Backbone.Marionette.ItemView
-    template: "<p>Nothing here</p>"
+    template: "<tr><td class='center'>Nothing here</td></tr>"
 class ListView extends Backbone.Marionette.CompositeView
     tagName: 'ul',
     childView: SingleLink
@@ -52,6 +53,7 @@ class ListView extends Backbone.Marionette.CompositeView
             </h1>
         </div>
         <div class="row">
+            <img class="center-block loading hide" id="loading" src="img/loading.gif" />
             <table class='table table-bordered table-striped'>
                 <thead><tr>
                     <th>Name</th>
@@ -62,13 +64,20 @@ class ListView extends Backbone.Marionette.CompositeView
                 </tr></thead>
                 <tbody></tbody>
             </table>
+            <img class="center-block loading hide" id="loading-bottom" src="img/loading.gif" />
         </div>""")
     events:
         "click #search-btn": "search"
     ui:
         "searchInput": "#search-input"
+        "loading": "#loading"
+        "loadingBottom": "#loading-bottom"
     initialize: ->
         $(window).on('scroll',@load)
+        @collection.on('ajax:loading',@loading)
+        @collection.on('ajax:done',@doneLoading)
+        @collection.on('ajax:paging:loading',@pageLoading)
+        @collection.on('ajax:paging:done',@pageDoneLoading)
     load: =>
 
         margin = 200
@@ -76,6 +85,14 @@ class ListView extends Backbone.Marionette.CompositeView
         # if we are closer than 'margin' to the end of the content, load more
         @collection.trigger "load"  if $(window.document).scrollTop() >= $(window.document).height() - $(window).height() - margin
         return
+    loading: =>
+        @ui.loading.removeClass('hide')
+    doneLoading: =>
+        @ui.loading.addClass('hide')
+    pageLoading: =>
+        @ui.loadingBottom.removeClass('hide')
+    pageDoneLoading: =>
+        @ui.loadingBottom.addClass('hide')
     search: ->
         @collection.trigger "search", @ui.searchInput.val()
 class Item extends Backbone.Model
@@ -89,15 +106,19 @@ class ItemCollection extends Backbone.Collection
         @opts =
             page: 0
     load: ->
+        @trigger('ajax:paging:loading')
         deildu.browse @opts, (err, data) =>
+            @trigger('ajax:paging:done')
             @add(data)
             @opts.page += 1
     search: (query) ->
         @opts.search = query
         @opts.cat = 0
         @opts.page = 0
+        @trigger('ajax:loading')
         deildu.browse @opts, (err, data) =>
             @reset(data)
+            @trigger('ajax:done')
 list = new ItemCollection
 view = new ListView
     collection: list,
@@ -141,18 +162,27 @@ startVlc = (href) ->
         vlc = proc.exec "vlc #{href} #{VLC_ARGS} || #{root} #{href} #{VLC_ARGS} || #{home} #{href} #{VLC_ARGS}", (error, stdout, stderror) ->
             if (error) 
                 process.exit(0)
+startAirplay = (href) ->
+    browser = require('airplay-js').createBrowser()
+    browser.on 'deviceOn', (device) ->
+        device.play href, 0, ->
+            console.log 'video playing'
+    browser.start()
 stream = (torrent) ->
     engine = peerflix(torrent,{dht: false, id: '01234567890123456789'})
     engine.on 'ready', ->
-        href = "http://localhost:#{engine.server.address().port}/"
-        # href = "http://#{address()}:#{engine.server.address().port}/"
-        console.log href
+        localHref = "http://localhost:#{engine.server.address().port}/"
+        remoteHref = "http://#{address()}:#{engine.server.address().port}/"
         engine.server.on 'error', ->
             console.log "SRV ERROR"
         engine.on 'peer', ->
             console.log "connected to peer"
         engine.server.on 'listening', ->
             # console.log engine.server.index
-            startVlc(href)
+            console.log $('#airplay').is ':checked'
+            if $('#airplay').is ':checked'
+                startAirplay remoteHref
+            else
+                startVlc(localHref)
             # vlc.on 'exit', ->
             #   process.exit(0) if not argv.n and argv.quit isnt false

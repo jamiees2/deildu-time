@@ -13,6 +13,7 @@
   },
   "chromium-args": "--child-clean-exit",
   "dependencies": {
+    "airplay-js": "^0.2.1",
     "cheerio": "^0.17.0",
     "coffee-script": "^1.7.1",
     "form-data": "^0.1.4",
