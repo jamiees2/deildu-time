@@ -92,11 +92,11 @@ exports.login secrets.deildu, -> # Attempt login immediately
 	
 
 exports.browse = (opts,callback) ->
+	args = arguments
 	unless loggedIn
 		return setTimeout ->
-			exports.browse.apply(this,arguments)
+			exports.browse.apply(this,args)
 		, 500
-	args = arguments
 
 	if typeof opts is "function"
 		callback = opts 
@@ -117,11 +117,11 @@ exports.browse = (opts,callback) ->
 		callback(null,data)
 
 exports.details = (id, callback) ->
+	args = arguments
 	unless loggedIn
 		return setTimeout ->
-			exports.details.apply(this,arguments)
+			exports.details.apply(this,args)
 		, 500
-	args = arguments
 	request.get "#{API_HOST}/details.php?id=#{id}", (err, httpResponse, body) ->
 		if err
 			return callback err
@@ -158,11 +158,11 @@ exports.details = (id, callback) ->
 
 
 exports.torrent = (id, torrent, callback) ->
+	args = arguments
 	unless loggedIn
 		return setTimeout ->
-			exports.browse.apply(this,arguments)
+			exports.browse.apply(this,args)
 		, 500
-	args = arguments
 	request.get "#{API_HOST}/download.php/#{id}/#{torrent}", (err, httpResponse, body) ->
 		if err
 			return callback(err)
