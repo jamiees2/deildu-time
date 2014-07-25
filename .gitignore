@@ -30,7 +30,7 @@ vendor
 # No minified files plz
 *.min.*
 
-lib/
+sublibs/
 
 dist/
 
