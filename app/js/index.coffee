@@ -4,22 +4,48 @@ fs = require('fs')
 proc = require('child_process')
 path = require('path')
 
-SingleLink = Backbone.Marionette.ItemView.extend
-    tagName: "li",
-    template: _.template("<a href='#'><%-name%></a>")
+class SingleLink extends Backbone.Marionette.ItemView
+    tagName: "tr",
+    template: _.template("<td><a href='#'><%-name%></a></td><td><%-file_count%></td><td><%-category%></td>")
     events: 
         "click a": "onClick"
     onClick: ->
-        deildu.getTorrent @model.get('id'), @model.get('torrent'), (err, torrent) ->
+        deildu.torrent @model.get('id'), @model.get('torrent'), (err, torrent) ->
             if err
                 console.log err
                 return
             stream(torrent)
 
-
-class ListView extends Backbone.Marionette.CollectionView
+class EmptyView extends Backbone.Marionette.ItemView
+    template: "<p>Nothing here</p>"
+class ListView extends Backbone.Marionette.CompositeView
     tagName: 'ul',
     childView: SingleLink
+    emptyView: EmptyView
+    childViewContainer: "tbody"
+    template: _.template("""
+        <div class="row">
+            <h1>
+                <div class="col-xs-6"><h1>Deildu Time</h1></div>
+                <div class="col-xs-6">
+                    <div class="input-group">
+                      <input type="text" class="form-control" placeholder="Search" id="search-input" />
+                      <span class="input-group-btn">
+                        <button class="btn btn-default" type="button" id="search-btn">Go</button>
+                      </span>
+                    </div>
+                </div>
+            </h1>
+        </div>
+        <div class="row">
+            <table class='table table-bordered'>
+                <tbody></tbody>
+            </table>
+        </div>""")
+    events:
+        "click #search-btn": "search"
+    ui:
+        "searchInput": "#search-input"
     initialize: ->
         $(window).on('scroll',@load)
     load: =>
@@ -29,7 +55,8 @@ class ListView extends Backbone.Marionette.CollectionView
         # if we are closer than 'margin' to the end of the content, load more
         @collection.trigger "load"  if $(window.document).scrollTop() >= $(window.document).height() - $(window).height() - margin
         return
-
+    search: ->
+        @collection.trigger "search", @ui.searchInput.val()
 class Item extends Backbone.Model
 
 class ItemCollection extends Backbone.Collection
@@ -37,11 +64,19 @@ class ItemCollection extends Backbone.Collection
     initialize: ->
         @load()
         @on "load", @load
-        @start = 0
+        @on "search", @search
+        @opts =
+            page: 0
     load: ->
-        deildu.getLatest @start, (err, data) =>
+        deildu.browse @opts, (err, data) =>
             @add(data)
-            @start += 1
+            @opts.page += 1
+    search: (query) ->
+        @opts.search = query
+        @opts.cat = 0
+        @opts.page = 0
+        deildu.browse @opts, (err, data) =>
+            @reset(data)
 list = new ItemCollection
 view = new ListView
     collection: list,
