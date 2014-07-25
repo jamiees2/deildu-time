@@ -4,6 +4,14 @@ fs = require('fs')
 proc = require('child_process')
 path = require('path')
 
+nwgui = global.window.nwDispatcher.requireNwGui()
+win = nwgui.Window.get()
+win.showDevTools()
+
+
+process.env['PATH'] += ";#{path.dirname(process.execPath)}" if process.platform is "win32"
+
+
 class SingleLink extends Backbone.Marionette.ItemView
     tagName: "tr",
     template: _.template("<td><a href='#'><%-name%></a></td><td><%-file_count%></td><td><%-category%></td>")
@@ -111,9 +119,9 @@ startVlc = (href) ->
                 catch err
         if key
             vlcPath = key['InstallDir'].value + path.sep + 'vlc'
-            VLC_ARGS = VLC_ARGS.split(' ')
-            VLC_ARGS.unshift(href)
-            proc.execFile(vlcPath, VLC_ARGS)
+            args = VLC_ARGS.split(' ')
+            args.unshift(href)
+            proc.execFile(vlcPath, args)
     else
         root = '/Applications/VLC.app/Contents/MacOS/VLC'
         home = (process.env.HOME || '') + root
