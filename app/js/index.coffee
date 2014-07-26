@@ -14,24 +14,46 @@ process.env['PATH'] += ";#{path.dirname(process.execPath)}" if process.platform 
 
 App = global.App = new Backbone.Marionette.Application();
 
+class EventRegion extends Backbone.Marionette.Region
+    show: (_,opts)->
+        @triggerMethod('hiding', @currentView) if opts? and opts.preventDestroy
+        super arguments...
+
 container = new Backbone.Marionette.LayoutView
     el: "#container"
     regions:
         header: "#header"
         menu: "#menu"
-        content: "#content"
+        content: 
+            selector: "#content"
+            regionClass: EventRegion
 
 
 
 
 ItemCollection = require('./collections/items').ItemCollection
+TorrentCollection = require('./collections/torrents').TorrentCollection
 ListView = require('./views/list').ListView
 HeaderView = require('./views/header').HeaderView
+MenuView = require('./views/menu').MenuView
+TorrentsView = require('./views/torrents').TorrentsView
+
 App.itemlist = new ItemCollection
-view = 
-container.content.show new ListView
+App.torrentlist = new TorrentCollection
+
+
+App.views = {}
+App.views.itemlist = new ListView
     collection: App.itemlist
-container.header.show new HeaderView
+App.views.torrentlist = new TorrentsView
+    collection: App.torrentlist
+App.views.header = new HeaderView
+App.views.menu = new MenuView
+
+
+container.header.show App.views.header
+container.menu.show App.views.menu
+container.content.show App.views.itemlist
 # view.render()
 
 # deildu.getLatest (err, data) ->
@@ -41,6 +63,17 @@ container.header.show new HeaderView
 #       el: '.feed'
 #     view.render()
 
+App.navigation_options = 
+    preventDestroy: true
+App.vent.on 'navigate:list', ->
+    container.content.show App.views.itemlist, App.navigation_options
+
+App.vent.on 'navigate:torrentlist', ->
+    container.content.show App.views.torrentlist, App.navigation_options
+
+App.vent.on 'torrent:add', (torrent) ->
+    App.torrentlist.add({torrent: torrent})
+    App.vent.trigger('navigate:torrentlist')
 
 App.vent.on 'stream', (torrent) ->
     engine = peerflix(torrent,{dht: false, id: '01234567890123456789'})

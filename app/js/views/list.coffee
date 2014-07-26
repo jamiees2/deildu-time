@@ -50,12 +50,25 @@ class ListView extends Backbone.Marionette.CompositeView
         @collection.on('ajax:done',@doneLoading)
         @collection.on('ajax:paging:loading',@pageLoading)
         @collection.on('ajax:paging:done',@pageDoneLoading)
+    onBeforeDestroy: ->
+        $(window).off('scroll',@load)
+    onHiding: ->
+        $(window).off('scroll',@load)
+    onShown: ->
+        $(window).on('scroll',@load)
+    onDomRefresh: ->
+        if @collection.loading
+            @ui.loading.removeClass('hide')
     load: =>
-
+        return if @stopPolling
         margin = 200
-
         # if we are closer than 'margin' to the end of the content, load more
-        @collection.trigger "loadPage"  if $(window.document).scrollTop() >= $(window.document).height() - $(window).height() - margin
+        if $(window.document).scrollTop() >= $(window.document).height() - $(window).height() - margin
+            @stopPolling = true
+            @collection.trigger "loadPage"
+            setTimeout ->
+                @stopPolling = false
+            , 1500
         return
     loading: =>
         @ui.loading.removeClass('hide')

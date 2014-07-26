@@ -20,8 +20,10 @@ class ItemCollection extends Backbone.Collection
 
     load: ->
         @trigger('ajax:loading')
+        @loading = true
         deildu.browse @opts, (err, data) =>
             @reset(data)
+            @loading = false
             @trigger('ajax:done')
 
     home: ->

@@ -17,7 +17,7 @@ class ItemView extends Backbone.Marionette.ItemView
             if err
                 console.log err
                 return
-            App.vent.trigger('stream',torrent)
+            App.vent.trigger('torrent:add',torrent)
         @$el.addClass('success')
 
 exports.ItemView = ItemView
