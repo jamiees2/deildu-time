@@ -5,38 +5,45 @@ class ListView extends Backbone.Marionette.CompositeView
     childViewContainer: "tbody"
     template: _.template("""
         <div class="row">
-            <h1>
-                <div class="col-xs-6"><h1>Deildu Time</h1></div>
-                <div class="col-xs-6">
-                    <div class="input-group">
-                      <input type="text" class="form-control" placeholder="Search" id="search-input" />
-                      <span class="input-group-btn">
-                        <button class="btn btn-default" type="button" id="search-btn">Go</button>
-                      </span>
-                    </div>
+            <div class="col-xs-6">
+                <ul class="nav nav-pills" id="controls">
+                  <li><a href="#" data-trigger="home"><i class="fa fa-2x fa-home"></i></a></li>
+                  <li><a href="#" data-trigger="reload"><i class="fa fa-2x fa-refresh"></i></a></li>
+                </ul>
+            </div>
+            <div class="col-xs-6">
+                <div class="input-group">
+                  <input type="text" class="form-control" placeholder="Search" id="search-input" />
+                  <span class="input-group-btn">
+                    <button class="btn btn-default" type="button" id="search-btn">Go</button>
+                  </span>
                 </div>
-            </h1>
+            </div>
         </div>
         <div class="row">
             <img class="center-block loading hide" id="loading" src="img/loading.gif" />
-            <table class='table table-bordered table-condensed table-hover'>
-                <thead><tr>
-                    <th>Name</th>
-                    <th>File Count</th>
-                    <th>Category</th>
-                    <th>Seeders</th>
-                    <th>Leechers</th>
-                </tr></thead>
-                <tbody></tbody>
-            </table>
+            <div class="col-xs-12">
+                <table class='table table-bordered table-condensed table-hover'>
+                    <thead><tr>
+                        <th>Name</th>
+                        <th>File Count</th>
+                        <th>Category</th>
+                        <th>Seeders</th>
+                        <th>Leechers</th>
+                    </tr></thead>
+                    <tbody></tbody>
+                </table>
+            </div>
             <img class="center-block loading hide" id="loading-bottom" src="img/loading.gif" />
         </div>""")
-    events:
-        "click #search-btn": "search"
     ui:
-        "searchInput": "#search-input"
         "loading": "#loading"
         "loadingBottom": "#loading-bottom"
+        "searchInput": "#search-input"
+    events:
+        "click #search-btn": "search"
+        "click #controls a": "control"
+        "keydown #search-input": "checkEnter"
     initialize: ->
         $(window).on('scroll',@load)
         @collection.on('ajax:loading',@loading)
@@ -48,7 +55,7 @@ class ListView extends Backbone.Marionette.CompositeView
         margin = 200
 
         # if we are closer than 'margin' to the end of the content, load more
-        @collection.trigger "load"  if $(window.document).scrollTop() >= $(window.document).height() - $(window).height() - margin
+        @collection.trigger "loadPage"  if $(window.document).scrollTop() >= $(window.document).height() - $(window).height() - margin
         return
     loading: =>
         @ui.loading.removeClass('hide')
@@ -58,6 +65,13 @@ class ListView extends Backbone.Marionette.CompositeView
         @ui.loadingBottom.removeClass('hide')
     pageDoneLoading: =>
         @ui.loadingBottom.addClass('hide')
+
+    control: (e) ->
+        @collection.trigger @$(e.currentTarget).attr('data-trigger')
+        
+    checkEnter: (e) ->
+        if e.keyCode is 13
+            return @search()
     search: ->
         @collection.trigger "search", @ui.searchInput.val()
 exports.ListView = ListView

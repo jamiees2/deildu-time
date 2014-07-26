@@ -14,16 +14,24 @@ process.env['PATH'] += ";#{path.dirname(process.execPath)}" if process.platform 
 
 App = global.App = new Backbone.Marionette.Application();
 
-container = new Backbone.Marionette.Region
+container = new Backbone.Marionette.LayoutView
     el: "#container"
+    regions:
+        header: "#header"
+        menu: "#menu"
+        content: "#content"
+
+
 
 
 ItemCollection = require('./collections/items').ItemCollection
 ListView = require('./views/list').ListView
-list = new ItemCollection
-view = new ListView
-    collection: list
-container.show(view)
+HeaderView = require('./views/header').HeaderView
+App.itemlist = new ItemCollection
+view = 
+container.content.show new ListView
+    collection: App.itemlist
+container.header.show new HeaderView
 # view.render()
 
 # deildu.getLatest (err, data) ->
