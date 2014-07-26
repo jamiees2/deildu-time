@@ -3,10 +3,11 @@ fs = require('fs')
 path = require('path')
 address = require('network-address')
 video = require('../lib/video')
-
 nwgui = global.window.nwDispatcher.requireNwGui()
 win = nwgui.Window.get()
-win.showDevTools()
+
+key 'command+d, ctrl+d', ->
+    win.showDevTools()
 
 
 process.env['PATH'] += ";#{path.dirname(process.execPath)}" if process.platform is "win32"
