@@ -1,5 +1,5 @@
 class ListView extends Backbone.Marionette.CompositeView
-    tagName: 'ul',
+    tagName: 'div',
     childView: require('./item').ItemView
     emptyView: require('./empty_item').EmptyItemView
     childViewContainer: "tbody"
