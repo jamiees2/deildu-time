@@ -8,6 +8,7 @@ class TorrentView extends Backbone.Marionette.ItemView
         <td><%-name%></td>
         <td id="peers"></td>
         <td id="speed"></td>
+        <td id="upload-speed"></td>
         <td id="downloaded"></td>
         <td><a href="#" data-player="vlc" class="players">VLC</a></td>
         <td><a href="#" data-player="airplay" class="players">AirPlay</a></td>
@@ -15,6 +16,7 @@ class TorrentView extends Backbone.Marionette.ItemView
     ui:
         "peers": "#peers"
         "speed": "#speed"
+        "uploadspeed": "#upload-speed"
         "downloaded": "#downloaded"
         "players": ".players"
     events:
@@ -26,10 +28,16 @@ class TorrentView extends Backbone.Marionette.ItemView
     statusUpdate: (unchoked, wires, swarm) ->
         @ui.peers.text(unchoked.length + "/" + wires.length)
         @ui.speed.text(bytes(swarm.downloadSpeed()) + "/s")
+        @ui.uploadspeed.text(bytes(swarm.uploadSpeed()) + "/s")
         @ui.downloaded.text(bytes(swarm.downloaded))
 
     serverReady: ->
         @ui.players.removeClass('hide')
+        if App.autoPlay
+            if App.player is "airplay"
+                video.startAirplay @model.get('remoteHref')
+            else
+                video.startVlc @model.get('localHref')
     startPlaying: (e) ->
         $this = @$(e.currentTarget)
         if $this.attr('data-player') is "airplay"

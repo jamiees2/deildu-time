@@ -14,12 +14,13 @@ process.env['PATH'] += ";#{path.dirname(process.execPath)}" if process.platform 
 
 App = global.App = new Backbone.Marionette.Application();
 
+# a hotfix to patch the infinite scrolling running when item is hidden
 class EventRegion extends Backbone.Marionette.Region
     show: (_,opts)->
         @triggerMethod('hiding', @currentView) if opts? and opts.preventDestroy
         super arguments...
 
-container = new Backbone.Marionette.LayoutView
+App.container = container = new Backbone.Marionette.LayoutView
     el: "#container"
     regions:
         header: "#header"
@@ -27,8 +28,6 @@ container = new Backbone.Marionette.LayoutView
         content: 
             selector: "#content"
             regionClass: EventRegion
-
-
 
 
 ItemCollection = require('./collections/items').ItemCollection
@@ -54,14 +53,6 @@ App.views.menu = new MenuView
 container.header.show App.views.header
 container.menu.show App.views.menu
 container.content.show App.views.itemlist
-# view.render()
-
-# deildu.getLatest (err, data) ->
-#     list = new ItemCollection(data)
-#     view = new ListView
-#       collection: list,
-#       el: '.feed'
-#     view.render()
 
 App.navigation_options = 
     preventDestroy: true
@@ -74,23 +65,3 @@ App.vent.on 'navigate:torrentlist', ->
 App.vent.on 'torrent:add', (torrent) ->
     App.torrentlist.add({torrent: torrent})
     App.vent.trigger('navigate:torrentlist')
-
-App.vent.on 'stream', (torrent) ->
-    engine = peerflix(torrent,{dht: false, id: '01234567890123456789'})
-    engine.on 'ready', ->
-        localHref = "http://localhost:#{engine.server.address().port}/"
-        remoteHref = "http://#{address()}:#{engine.server.address().port}/"
-        console.log localHref, remoteHref
-        engine.server.on 'error', ->
-            console.log "SRV ERROR"
-        engine.on 'peer', ->
-            console.log "connected to peer"
-        engine.server.on 'listening', ->
-            # console.log engine.server.index
-            console.log $('#airplay').is ':checked'
-            if $('#airplay').is ':checked'
-                video.startAirplay remoteHref
-            else
-                video.startVlc(localHref)
-            # vlc.on 'exit', ->
-            #   process.exit(0) if not argv.n and argv.quit isnt false
