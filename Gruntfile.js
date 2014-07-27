@@ -243,14 +243,14 @@ module.exports = function (grunt) {
   grunt.registerTask('dist-linux', [
     'jshint',
     'clean:dist',
-    'copy:appLinux',
+    // 'copy:appLinux',
     'createLinuxApp:Linux64'
   ]);
 
   grunt.registerTask('dist-linux32', [
     'jshint',
     'clean:dist',
-    'copy:appLinux',
+    // 'copy:appLinux',
     'createLinuxApp:Linux32'
   ]);
 
