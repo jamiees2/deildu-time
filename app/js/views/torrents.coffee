@@ -24,6 +24,7 @@ class TorrentsView extends Backbone.Marionette.CompositeView
                         <th>Downloaded</th>
                         <th>VLC</th>
                         <th>AirPlay</th>
+                        <th>Chromecast</th>
                     </tr></thead>
                     <tbody></tbody>
                 </table>

@@ -12,6 +12,7 @@ class TorrentView extends Backbone.Marionette.ItemView
         <td id="downloaded"></td>
         <td><a href="#" data-player="vlc" class="players">VLC</a></td>
         <td><a href="#" data-player="airplay" class="players">AirPlay</a></td>
+        <td><a href="#" data-player="chromecast" class="players">Chromecast</a></td>
         """)
     ui:
         "peers": "#peers"
@@ -36,12 +37,16 @@ class TorrentView extends Backbone.Marionette.ItemView
         if App.autoPlay
             if App.player is "airplay"
                 video.startAirplay @model.get('remoteHref')
+            else if App.player is "chromecast"
+                video.startChromecast @model.get('remoteHref')
             else
                 video.startVlc @model.get('localHref')
     startPlaying: (e) ->
         $this = @$(e.currentTarget)
         if $this.attr('data-player') is "airplay"
             video.startAirplay @model.get('remoteHref')
+        else if $this.attr('data-player') is "chromecast"
+            video.startChromecast @model.get('remoteHref')
         else
             video.startVlc @model.get('localHref')
 

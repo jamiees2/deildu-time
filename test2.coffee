@@ -11,7 +11,7 @@ proc = require('child_process')
 
 
 
-torrent = fs.readFileSync(__dirname + '/torrents/testavi.torrent')
+torrent = fs.readFileSync(__dirname + '/torrents/test.torrent')
 
 engine = peerflix(torrent,{dht: false, id: '01234567890123456789', port: 8090})
 VLC_ARGS = "-q --video-on-top --play-and-exit"
