@@ -10,7 +10,7 @@ class Torrent extends Backbone.Model
 			console.log e
 		@set(_.pick(torrent,'infoHash','name','private','created','announce'))
 		# @engine = opts.engine
-		@engine = peerflix(opts.torrent,{dht: false, id: '01234567890123456789', port: 8090})
+		@engine = peerflix(opts.torrent,{dht: false, id: '01234567890123456789'})
 		@hotswaps = 0
 		@verified = 0
 		@invalid = 0

@@ -68,7 +68,7 @@ exports.startChromecast = (href, callback) ->
                 media =
                     # Here you can plug an URL to any mp4, webm, mp3 or jpg file.
                     # contentId: 'http://commondatastorage.googleapis.com/gtv-videos-bucket/big_buck_bunny_1080p.mp4'
-                    contentId: "http://10.10.5.35:8090/"
+                    contentId: href
                     contentType: "video/mp4"
 
                 player.on "status", (status) ->
