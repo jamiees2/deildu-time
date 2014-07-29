@@ -6,7 +6,7 @@ class ListView extends Backbone.Marionette.CompositeView
     template: _.template("""
         <div class="row">
             <div class="col-xs-6">
-                <ul class="nav nav-pills" id="controls">
+                <ul class="nav nav-pills" id="list-controls">
                   <li><a href="#" data-trigger="home"><i class="fa fa-2x fa-home"></i></a></li>
                   <li><a href="#" data-trigger="reload"><i class="fa fa-2x fa-refresh"></i></a></li>
                 </ul>

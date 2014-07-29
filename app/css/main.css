@@ -18,6 +18,29 @@ a i.fa {
 	margin-bottom: 20px;
 }
 
-#controls {
+#list-controls {
 	margin-bottom: 20px;
+}
+
+#player {
+	height: 75px;
+	background-color: white;
+	z-index: 100;
+	width: 25%;
+	position: fixed;
+	bottom: 0;
+	right: 0;
+	box-shadow: 0 0 30px 1px #111;
+	padding: 22px 40px;
+}
+
+#player .nav {
+
+}
+
+#player .nav>li {
+	margin-right: 10px;
+}
+#player .nav>li input {
+	width: 70px;
 }

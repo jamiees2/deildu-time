@@ -70,12 +70,22 @@ exports.startChromecast = (href) ->
                 player.load media, autoplay: true, (err, status) ->
                     console.log err
                     console.log status
+                # callback 
+                #     stop:
+                #         player.stop ->
+                #     play:
+                #         player.play ->
+                #     pause:
+                #         player.pause ->
+                process.on "kill", ->
+                    player.stop()
 
       
         # console.log('media loaded playerState=%s', status.playerState);
         client.on "error", (err) ->
             console.log "Error: %s", err.message
             client.close()
+
 
 
 

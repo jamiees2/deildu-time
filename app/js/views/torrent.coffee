@@ -34,7 +34,7 @@ class TorrentView extends Backbone.Marionette.ItemView
 
     serverReady: ->
         @ui.players.removeClass('hide')
-        if App.autoPlay
+        if App.autoPlay and false
             if App.player is "airplay"
                 video.startAirplay @model.get('remoteHref')
             else if App.player is "chromecast"
@@ -46,7 +46,10 @@ class TorrentView extends Backbone.Marionette.ItemView
         if $this.attr('data-player') is "airplay"
             video.startAirplay @model.get('remoteHref')
         else if $this.attr('data-player') is "chromecast"
-            video.startChromecast @model.get('remoteHref')
+            PlayerView = require('./player').PlayerView
+            video.startChromecast @model.get('remoteHref'), (player) ->
+                App.container.player.show new PlayerView
+                    player: player
         else
             video.startVlc @model.get('localHref')
 

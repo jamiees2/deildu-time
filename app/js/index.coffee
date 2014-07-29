@@ -28,6 +28,7 @@ App.container = container = new Backbone.Marionette.LayoutView
         content: 
             selector: "#content"
             regionClass: EventRegion
+        player: "#player"
 
 
 ItemCollection = require('./collections/items').ItemCollection
