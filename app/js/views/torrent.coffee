@@ -43,13 +43,14 @@ class TorrentView extends Backbone.Marionette.ItemView
                 video.startVlc @model.get('localHref')
     startPlaying: (e) ->
         $this = @$(e.currentTarget)
+        PlayerView = require('./player').PlayerView
+        cb = (player) ->
+            App.container.player.show new PlayerView
+                player: player
         if $this.attr('data-player') is "airplay"
-            video.startAirplay @model.get('remoteHref')
+            video.startAirplay @model.get('remoteHref'), cb
         else if $this.attr('data-player') is "chromecast"
-            PlayerView = require('./player').PlayerView
-            video.startChromecast @model.get('remoteHref'), (player) ->
-                App.container.player.show new PlayerView
-                    player: player
+            video.startChromecast @model.get('remoteHref'), cb
         else
             video.startVlc @model.get('localHref')
 

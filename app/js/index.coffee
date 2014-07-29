@@ -37,6 +37,7 @@ ListView = require('./views/list').ListView
 HeaderView = require('./views/header').HeaderView
 MenuView = require('./views/menu').MenuView
 TorrentsView = require('./views/torrents').TorrentsView
+PlayerView = require('./views/player').PlayerView
 
 App.itemlist = new ItemCollection
 App.torrentlist = new TorrentCollection
@@ -54,6 +55,7 @@ App.views.menu = new MenuView
 container.header.show App.views.header
 container.menu.show App.views.menu
 container.content.show App.views.itemlist
+# container.player.show new PlayerView player: {}
 
 App.navigation_options = 
     preventDestroy: true

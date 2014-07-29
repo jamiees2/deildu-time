@@ -32,11 +32,21 @@ exports.startVlc = (href) ->
         vlc = proc.exec "vlc #{href} #{VLC_ARGS} || #{root} #{href} #{VLC_ARGS} || #{home} #{href} #{VLC_ARGS}", (error, stdout, stderror) ->
             if (error) 
                 process.exit(0)
-exports.startAirplay = (href) ->
+exports.startAirplay = (href, callback) ->
     browser = require('airplay-js').createBrowser()
     browser.on 'deviceOn', (device) ->
+        # console.log 'found device ' + device.getInfo().name
+        console.log device.getInfo()
+        console.log device.serverInfo
         device.play href, 0, ->
             console.log 'video playing'
+            callback
+                stop: ->
+                    device.stop(->)
+                play: ->
+                    device.rate(1,->)
+                pause: ->
+                    device.rate(0,->)
     browser.start()
 
 exports.startChromecast = (href, callback) ->
@@ -77,6 +87,8 @@ exports.startChromecast = (href, callback) ->
                         player.play ->
                     pause: ->
                         player.pause ->
+                    volume: (value) ->
+                        player.setVolume(value / 100.0, ->);
                 process.on "kill", ->
                     player.stop()
 

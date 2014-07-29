@@ -46,7 +46,7 @@ class Torrent extends Backbone.Model
 
 	idle: =>
 		@idle = true
-		console.log 'idle'
+		# console.log 'idle'
 
 
 	invalid_piece: =>
