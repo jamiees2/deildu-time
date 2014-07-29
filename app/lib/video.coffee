@@ -39,7 +39,7 @@ exports.startAirplay = (href) ->
             console.log 'video playing'
     browser.start()
 
-exports.startChromecast = (href) ->
+exports.startChromecast = (href, callback) ->
     Client = require("castv2-client").Client
     DefaultMediaReceiver = require("castv2-client").DefaultMediaReceiver
     Mdns = require("mdns-js2")
@@ -70,13 +70,13 @@ exports.startChromecast = (href) ->
                 player.load media, autoplay: true, (err, status) ->
                     console.log err
                     console.log status
-                # callback 
-                #     stop:
-                #         player.stop ->
-                #     play:
-                #         player.play ->
-                #     pause:
-                #         player.pause ->
+                callback 
+                    stop: ->
+                        player.stop ->
+                    play: ->
+                        player.play ->
+                    pause: ->
+                        player.pause ->
                 process.on "kill", ->
                     player.stop()
 
