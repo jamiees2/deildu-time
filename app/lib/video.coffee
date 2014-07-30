@@ -36,8 +36,6 @@ exports.startAirplay = (callback) ->
     browser = require('airplay-js').createBrowser()
     browser.on 'deviceOn', (device) ->
         console.log 'found device ' + device.getInfo().name
-        console.log device.getInfo()
-        console.log device.serverInfo
         callback
             name: device.getInfo().name
             play: (href, play_callback) ->
@@ -52,7 +50,7 @@ exports.startAirplay = (callback) ->
                             device.rate(0,->)
     browser.start()
 
-exports.startChromecast = (href, callback) ->
+exports.startChromecast = (callback) ->
     Client = require("castv2-client").Client
     DefaultMediaReceiver = require("castv2-client").DefaultMediaReceiver
     mdns = require("mdns-js")
@@ -61,47 +59,46 @@ exports.startChromecast = (href, callback) ->
         browser.discover()
 
     browser.on "update", (device) ->
-        console.log("found device \"#{device.name}\" at #{device.addresses[0]}:#{device.port}")
-        client = new Client()
-        client.connect device.addresses[0], ->
-            console.log "connected, launching app ..."
-            client.launch DefaultMediaReceiver, (err, player) ->
-                media =
-                    # Here you can plug an URL to any mp4, webm, mp3 or jpg file.
-                    # contentId: 'http://commondatastorage.googleapis.com/gtv-videos-bucket/big_buck_bunny_1080p.mp4'
-                    contentId: href
-                    contentType: "video/mp4"
-
-                player.on "status", (status) ->
-                    console.log status
-
-          
-                # console.log('status broadcast playerState=%s', status.playerState);
-                console.log "app \"%s\" launched, loading media %s ...", player.session.displayName, media.contentId
-                player.load media, autoplay: true, (err, status) ->
-                    console.log err
-                    console.log status
-                callback 
-                    stop: ->
-                        player.stop ->
-                    play: ->
-                        player.play ->
-                    pause: ->
-                        player.pause ->
-                    volume: (value) ->
-                        client.setVolume({level: value / 100.0}, ->)
-                    mute: ->
-                        client.setVolume({muted: true}, ->)
-                    unmute: ->
-                        client.setVolume({muted: false}, ->)
-                process.on "kill", ->
-                    player.stop()
-
-      
-        # console.log('media loaded playerState=%s', status.playerState);
-        client.on "error", (err) ->
-            console.log "Error: #{err.message}"
-            client.close()
+        console.log("found device #{device.name} at #{device.addresses[0]}:#{device.port}")
+        callback
+            name: device.name
+            play: (href, play_callback) ->
+                browser.shutdown()
+                client = new Client()
+                client.connect device.addresses[0], ->
+                    console.log "connected, launching app ..."
+                    client.launch DefaultMediaReceiver, (err, player) ->
+                        media =
+                            contentId: href
+                            contentType: "video/mp4"
+                        player.on "status", (status) ->
+                            console.log status
+                  
+                        # console.log('status broadcast playerState=%s', status.playerState);
+                        # console.log "app \"%s\" launched, loading media %s ...", player.session.displayName, media.contentId
+                        player.load media, autoplay: true, (err, status) ->
+                            if (err)
+                                console.log err
+                            console.log status
+                        play_callback 
+                            stop: ->
+                                player.stop ->
+                                    client.stop(player, ->) # client.close()
+                            play: ->
+                                player.play ->
+                            pause: ->
+                                player.pause ->
+                            volume: (value) ->
+                                client.setVolume({level: value / 100.0}, ->)
+                            mute: ->
+                                client.setVolume({muted: true}, ->)
+                            unmute: ->
+                                client.setVolume({muted: false}, ->)
+              
+                # console.log('media loaded playerState=%s', status.playerState);
+                client.on "error", (err) ->
+                    console.log "Error: #{err.message}"
+                    client.close()
 
 
 

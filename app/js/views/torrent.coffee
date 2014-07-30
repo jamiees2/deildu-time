@@ -25,7 +25,7 @@ class TorrentView extends Backbone.Marionette.ItemView
         "downloaded": "#downloaded"
         "players": ".players"
     events:
-        "click td a[data-player]": "startPlaying"
+        "click td a[data-player]": "clickPlay"
     modelEvents: 
         "status:update": "statusUpdate"
         "server:ready": "serverReady"
@@ -39,33 +39,32 @@ class TorrentView extends Backbone.Marionette.ItemView
     serverReady: ->
         @ui.players.removeClass('hide')
         if App.autoPlay and false
-            if App.player is "airplay"
-                video.startAirplay @model.get('remoteHref')
-            else if App.player is "chromecast"
-                video.startChromecast @model.get('remoteHref')
-            else
-                video.startVlc @model.get('localHref')
-    startPlaying: (e) ->
+            @startPlaying(App.player)
+    clickPlay: (e) ->
         $this = @$(e.currentTarget)
-        cb = (player) ->
-            App.container.player.show new PlayerView
-                player: player
+        @startPlaying($this.attr('data-player'))
+    startPlaying: (player) ->
+        if player is "vlc"
+            return video.startVlc @model.get('localHref')
+
+
         deviceCollection = new DeviceCollection
 
-        App.vent.on 'device:select', (player) =>
-            player.play @model.get('remoteHref'), cb
+        App.vent.once 'device:select', (player) =>
+            player.play @model.get('remoteHref'), (player) ->
+                App.container.player.show new PlayerView
+                    player: player
 
         App.container.player.show new DevicesView
             collection: deviceCollection
 
-        if $this.attr('data-player') is "airplay"
+        if player is "airplay"
             video.startAirplay (device) ->
                 console.log device
                 deviceCollection.add(device)
-
-        else if $this.attr('data-player') is "chromecast"
-            video.startChromecast @model.get('remoteHref'), cb
-        else
-            video.startVlc @model.get('localHref')
+        else if player is "chromecast"
+            video.startChromecast (device) ->
+                console.log device
+                deviceCollection.add(device)
 
 exports.TorrentView = TorrentView

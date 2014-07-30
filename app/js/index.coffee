@@ -68,3 +68,13 @@ App.vent.on 'navigate:torrentlist', ->
 App.vent.on 'torrent:add', (torrent) ->
     App.torrentlist.add({torrent: torrent})
     App.vent.trigger('navigate:torrentlist')
+
+win.on 'close', ->
+    App.vent.trigger('close')
+    setTimeout ->
+        App.vent.trigger('window:close:force')
+    , 2000
+App.vent.on 'window:close', ->
+    win.close()
+App.vent.on 'window:close:force', ->
+    win.close(true)
