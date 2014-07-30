@@ -20,7 +20,7 @@
     "form-data": "^0.1.4",
     "hat": "0.0.3",
     "iconv-lite": "^0.4.4",
-    "mdns-js2": "0.0.4",
+    "mdns-js2": "git+ssh://git@github.com:jamiees2/node-mdns-js.git",
     "mime": "^1.2.11",
     "network-address": "0.0.4",
     "numeral": "^1.5.3",

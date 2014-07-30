@@ -52,17 +52,15 @@ exports.startAirplay = (href, callback) ->
 exports.startChromecast = (href, callback) ->
     Client = require("castv2-client").Client
     DefaultMediaReceiver = require("castv2-client").DefaultMediaReceiver
-    Mdns = require("mdns-js2")
-    mdns = new Mdns("googlecast")
-    mdns.on "ready", ->
-      mdns.discover()
-      return
+    mdns = require("mdns-js")
+    browser = new mdns.Mdns(mdns.tcp("googlecast"))
+    browser.on "ready", ->
+        browser.discover()
 
-    mdns.on "update", ->
-        addresses = mdns.ips("_googlecast._tcp")
-        console.log "found device \"\" at %s", addresses[0]
+    browser.on "update", (device) ->
+        console.log("found device \"#{device.name}\" at #{device.addresses[0]}:#{device.port}")
         client = new Client()
-        client.connect addresses[0], ->
+        client.connect device.addresses[0], ->
             console.log "connected, launching app ..."
             client.launch DefaultMediaReceiver, (err, player) ->
                 media =
@@ -88,14 +86,18 @@ exports.startChromecast = (href, callback) ->
                     pause: ->
                         player.pause ->
                     volume: (value) ->
-                        player.setVolume(value / 100.0, ->);
+                        client.setVolume({level: value / 100.0}, ->)
+                    mute: ->
+                        client.setVolume({muted: true}, ->)
+                    unmute: ->
+                        client.setVolume({muted: false}, ->)
                 process.on "kill", ->
                     player.stop()
 
       
         # console.log('media loaded playerState=%s', status.playerState);
         client.on "error", (err) ->
-            console.log "Error: %s", err.message
+            console.log "Error: #{err.message}"
             client.close()
 
 

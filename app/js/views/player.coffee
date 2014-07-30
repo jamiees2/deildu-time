@@ -31,8 +31,9 @@ class PlayerView extends Backbone.Marionette.ItemView
     play: ->
     	@player.play()
 
-    updateVolume: ->
-    	@player.setVolume(@ui.volume.val())
+    updateVolume: _.debounce ->
+    	@player.volume(@ui.volume.val())
+    , 200
 
 
 exports.PlayerView = PlayerView
