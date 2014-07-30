@@ -1,5 +1,9 @@
 numeral = require('numeral')
 video = require('../../lib/video')
+PlayerView = require('./player').PlayerView
+DeviceCollection = require('../collections/devices').DeviceCollection
+DevicesView = require('./devices').DevicesView
+
 bytes = (num) ->
     return numeral(num).format('0.0b')
 class TorrentView extends Backbone.Marionette.ItemView
@@ -43,12 +47,22 @@ class TorrentView extends Backbone.Marionette.ItemView
                 video.startVlc @model.get('localHref')
     startPlaying: (e) ->
         $this = @$(e.currentTarget)
-        PlayerView = require('./player').PlayerView
         cb = (player) ->
             App.container.player.show new PlayerView
                 player: player
+        deviceCollection = new DeviceCollection
+
+        App.vent.on 'device:select', (player) =>
+            player.play @model.get('remoteHref'), cb
+
+        App.container.player.show new DevicesView
+            collection: deviceCollection
+
         if $this.attr('data-player') is "airplay"
-            video.startAirplay @model.get('remoteHref'), cb
+            video.startAirplay (device) ->
+                console.log device
+                deviceCollection.add(device)
+
         else if $this.attr('data-player') is "chromecast"
             video.startChromecast @model.get('remoteHref'), cb
         else

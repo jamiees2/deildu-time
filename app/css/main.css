@@ -23,7 +23,6 @@ a i.fa {
 }
 
 #player div {
-	height: 75px;
 	background-color: white;
 	z-index: 100;
 	/*width: 25%;*/
