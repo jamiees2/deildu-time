@@ -15,8 +15,8 @@ class TorrentView extends Backbone.Marionette.ItemView
         <td id="upload-speed"></td>
         <td id="downloaded"></td>
         <td><a href="#" data-player="vlc" class="players">VLC</a></td>
-        <td><a href="#" data-player="airplay" class="players">AirPlay</a></td>
-        <td><a href="#" data-player="chromecast" class="players">Chromecast</a></td>
+        <td><a href="#" data-player="airplay" class="players"><img class="media-icon" src="img/airplay.png" alt="AirPlay" /></a></td>
+        <td><a href="#" data-player="chromecast" class="players"><img class="media-icon" src="img/chromecast.png" alt="Chromecast" /></a></td>
         """)
     ui:
         "peers": "#peers"
