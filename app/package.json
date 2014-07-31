@@ -14,7 +14,7 @@
   "chromium-args": "--child-clean-exit",
   "dependencies": {
     "airplay-js": "git+ssh://git@github.com:jamiees2/node-airplay2.git",
-    "castv2-client": "git+ssh://git@github.com:jamiees2/node-castv2-client.git",
+    "castv2-client": "0.0.2",
     "cheerio": "^0.17.0",
     "coffee-script": "^1.7.1",
     "form-data": "^0.1.4",
