@@ -17,6 +17,7 @@ class TorrentView extends Backbone.Marionette.ItemView
         <td><a href="#" data-player="vlc" class="players">VLC</a></td>
         <td><a href="#" data-player="airplay" class="players"><img class="media-icon" src="img/airplay.png" alt="AirPlay" /></a></td>
         <td><a href="#" data-player="chromecast" class="players"><img class="media-icon" src="img/chromecast.png" alt="Chromecast" /></a></td>
+        <td><a href="#" data-player="upnp" class="players">UPNP</a></td>
         """)
     ui:
         "peers": "#peers"
@@ -46,6 +47,8 @@ class TorrentView extends Backbone.Marionette.ItemView
     startPlaying: (player) ->
         if player is "vlc"
             return video.startVlc @model.get('localHref')
+        else if player is "upnp"
+            return video.startUPNP @model.engine.server.files, @model.get('port')
 
 
         deviceCollection = new DeviceCollection

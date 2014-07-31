@@ -102,5 +102,16 @@ exports.startChromecast = (callback) ->
 
 
 
+exports.startUPNP = (files, port, callback) ->
+    files = ({name: file.name, size: file.length, url: "http://<host>:#{port}/#{i}"} for file, i in files)
+    UPNPServer = require('upnpserver')
+    HTTPRepository = require('upnpserver/lib/httpRepository')
+    server=new UPNPServer({ log: false, name: "Deildu Time"}, [
+        new HTTPRepository('path:peerflix/torrent',"/",files),
+        { path: '/Users/james/Movies', mountPoint: '/test'}
+    ]);
+
+    server.start();
+
 
 

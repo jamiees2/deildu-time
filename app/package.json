@@ -4,7 +4,7 @@
   "version": "0.0.1",
   "single-instance": true,
   "window": {
-    "title": "DeilduTime",
+    "title": "Deildu Time",
     "width": 1080,
     "height": 650,
     "min_width": 800,
@@ -32,6 +32,7 @@
     "static-favicon": "~1.0.1",
     "torrent-stream": "^0.13.5",
     "tough-cookie": "^0.12.1",
+    "upnpserver": "git+ssh://git@github.com:jamiees2/upnpserver.git",
     "windows-no-runnable": "0.0.6"
   }
 }

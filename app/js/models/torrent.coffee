@@ -27,6 +27,7 @@ class Torrent extends Backbone.Model
 		@set
         	localHref: "http://localhost:#{@engine.server.address().port}/"
         	remoteHref:"http://#{address()}:#{@engine.server.address().port}/"
+        	port: @engine.server.address().port
         @startInterval()
 	startInterval: ->
 		@interval = setInterval(@updateStatus,250)
