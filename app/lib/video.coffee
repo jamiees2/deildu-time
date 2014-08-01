@@ -122,6 +122,7 @@ exports.startUPNP = (files, port, engine, callback) ->
                         url: @url + "/" + idx
                         directory: false
                     , idx)
+                console.log ar
                 cb(null, ar)
     ar = []
     for file, i in files
@@ -131,10 +132,14 @@ exports.startUPNP = (files, port, engine, callback) ->
             url: "http://<host>:#{port}/#{i}",
             directory: file.composite,
         , i)
+    # for f in ar
+    #     if f.directory
+    #         f.getFiles (err, data)->
+    #             console.log(data)
     UPNPServer = require('upnpserver')
     HTTPRepository = require('upnpserver/lib/httpRepository')
     server=new UPNPServer({ log: false, name: "Deildu Time"}, [
-        new HTTPRepository('path:peerflix/torrent',"/",ar),
+        new HTTPRepository('path:peerflix/torrent',"/" + engine.infoHash ,ar),
         { path: '/Users/james/Movies', mountPoint: '/test'}
     ]);
 
