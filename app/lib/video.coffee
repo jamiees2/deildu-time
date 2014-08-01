@@ -103,6 +103,9 @@ exports.startChromecast = (callback) ->
 
 
 
+UPNPServer = require('upnpserver')
+HTTPRepository = require('upnpserver/lib/httpRepository')
+upnpServer = null
 exports.startUPNP = (files, port, name, engine, callback) ->
     class Entry
         constructor: (opts, index) ->
@@ -137,15 +140,21 @@ exports.startUPNP = (files, port, name, engine, callback) ->
     #     if f.directory
     #         f.getFiles (err, data)->
     #             console.log(data)
-    UPNPServer = require('upnpserver')
-    HTTPRepository = require('upnpserver/lib/httpRepository')
-    server=new UPNPServer({ log: false, name: "Deildu Time"}, [
-        new HTTPRepository("path:deildutime/torrent/#{name}", "/" + name, ar)
-    ]);
+    repo = new HTTPRepository("path:deildutime/torrent/#{name}", "/" + name, ar)
+    if upnpServer
+        upnpServer.addRepository(repo)
+    else
+        upnpServer=new UPNPServer({ 
+            log: false,
+            name: "Deildu Time",
+            uuid: '5c39c8f8-8a75-4850-a90a-246ac6dd0734'
+        }, [
+            repo
+        ]);
 
-    server.start();
+        upnpServer.start();
 
-    callback server
+        callback upnpServer
 
 
 
