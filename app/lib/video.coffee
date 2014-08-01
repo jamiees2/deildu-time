@@ -81,9 +81,10 @@ exports.startChromecast = (callback) ->
                                 console.log err
                             console.log status
                         play_callback 
-                            stop: ->
+                            stop: (cb) ->
                                 player.stop ->
-                                    client.stop(player, ->) # client.close()
+                                    client.stop player, ->
+                                        cb() if cb
                             play: ->
                                 player.play ->
                             pause: ->
@@ -102,7 +103,7 @@ exports.startChromecast = (callback) ->
 
 
 
-exports.startUPNP = (files, port, engine, callback) ->
+exports.startUPNP = (files, port, name, engine, callback) ->
     class Entry
         constructor: (opts, index) ->
             @index = index
@@ -139,11 +140,12 @@ exports.startUPNP = (files, port, engine, callback) ->
     UPNPServer = require('upnpserver')
     HTTPRepository = require('upnpserver/lib/httpRepository')
     server=new UPNPServer({ log: false, name: "Deildu Time"}, [
-        new HTTPRepository('path:peerflix/torrent',"/" + engine.infoHash ,ar),
-        { path: '/Users/james/Movies', mountPoint: '/test'}
+        new HTTPRepository("path:deildutime/torrent/#{name}", "/" + name, ar)
     ]);
 
     server.start();
+
+    callback server
 
 
 

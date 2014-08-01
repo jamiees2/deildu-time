@@ -48,7 +48,9 @@ class TorrentView extends Backbone.Marionette.ItemView
         if player is "vlc"
             return video.startVlc @model.get('localHref')
         else if player is "upnp"
-            return video.startUPNP @model.engine.server.files, @model.get('port'), @model.engine
+            return video.startUPNP @model.engine.server.files, @model.get('port'), @model.get('name'), @model.engine, (server) ->
+                App.diehard.register (done) ->
+                    server.stop done
 
 
         deviceCollection = new DeviceCollection

@@ -18,8 +18,9 @@ class PlayerView extends Backbone.Marionette.ItemView
         "pause": "#pause"
     initialize: (options) ->
         @player = options.player
-        App.vent.once 'close', =>
-            @player.stop
+        App.diehard.register (done) =>
+            @player.stop ->
+                done()
     onDomRefresh: ->
         for key in ['play', 'pause', 'stop', 'volume']
             unless @player[key]?

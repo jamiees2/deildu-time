@@ -17,6 +17,7 @@
     "castv2-client": "0.0.2",
     "cheerio": "^0.17.0",
     "coffee-script": "^1.7.1",
+    "diehard": "^1.1.2",
     "form-data": "^0.1.4",
     "hat": "0.0.3",
     "iconv-lite": "^0.4.4",

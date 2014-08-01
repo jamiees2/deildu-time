@@ -57,6 +57,9 @@ container.menu.show App.views.menu
 container.content.show App.views.itemlist
 # container.player.show new PlayerView player: {}
 
+
+
+
 App.navigation_options = 
     preventDestroy: true
 App.vent.on 'navigate:list', ->
@@ -69,11 +72,20 @@ App.vent.on 'torrent:add', (torrent) ->
     App.torrentlist.add({torrent: torrent})
     App.vent.trigger('navigate:torrentlist')
 
+
+
+# process.on("uncaughtException", (err) -> alert("error: " + err) );
 win.on 'close', ->
-    App.vent.trigger('close')
-    setTimeout ->
-        App.vent.trigger('window:close:force')
-    , 2000
+    App.diehard.die('SIGINT',null)
+    win.close(true)
+
+App.diehard = require('diehard')
+
+App.diehard.register (signal, done) ->
+    fs.appendFileSync("/tmp/debug.txt", "Exit! #{signal}\n")
+    done()
+App.diehard.listen()
+
 App.vent.on 'window:close', ->
     win.close()
 App.vent.on 'window:close:force', ->
