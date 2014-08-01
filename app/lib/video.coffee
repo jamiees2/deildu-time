@@ -102,12 +102,39 @@ exports.startChromecast = (callback) ->
 
 
 
-exports.startUPNP = (files, port, callback) ->
-    files = ({name: file.name, size: file.length, url: "http://<host>:#{port}/#{i}"} for file, i in files)
+exports.startUPNP = (files, port, engine, callback) ->
+    class Entry
+        constructor: (opts, index) ->
+            @index = index
+            @name = opts.name
+            @size = opts.size
+            @url = opts.url
+            @directory = opts.directory or false
+        getFiles: (cb) ->
+            throw new ValueError("File is not Directory!") unless @directory
+            engine.server.listRAR files[@index], (err, data) =>
+                return cb(err) if err
+                ar = []
+                for item, idx in data
+                    ar.push new Entry(
+                        name: item.name
+                        size: item.length
+                        url: @url + "/" + idx
+                        directory: false
+                    , idx)
+                cb(null, ar)
+    ar = []
+    for file, i in files
+        ar.push new Entry(
+            name: file.name,
+            size: file.length,
+            url: "http://<host>:#{port}/#{i}",
+            directory: file.composite,
+        , i)
     UPNPServer = require('upnpserver')
     HTTPRepository = require('upnpserver/lib/httpRepository')
     server=new UPNPServer({ log: false, name: "Deildu Time"}, [
-        new HTTPRepository('path:peerflix/torrent',"/",files),
+        new HTTPRepository('path:peerflix/torrent',"/",ar),
         { path: '/Users/james/Movies', mountPoint: '/test'}
     ]);
 
