@@ -13,7 +13,7 @@
   },
   "chromium-args": "--child-clean-exit",
   "dependencies": {
-    "airplay-js": "git+ssh://git@github.com:jamiees2/node-airplay2.git",
+    "airplay-js": "^0.2.2",
     "castv2-client": "0.0.2",
     "cheerio": "^0.17.0",
     "coffee-script": "^1.7.1",
@@ -21,7 +21,7 @@
     "form-data": "^0.1.4",
     "hat": "0.0.3",
     "iconv-lite": "^0.4.4",
-    "mdns-js2": "git+ssh://git@github.com:jamiees2/node-mdns-js.git",
+    "mdns-js": "^0.1.0",
     "mime": "^1.2.11",
     "network-address": "0.0.4",
     "numeral": "^1.5.3",

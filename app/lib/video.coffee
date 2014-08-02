@@ -54,7 +54,7 @@ exports.startChromecast = (callback) ->
     Client = require("castv2-client").Client
     DefaultMediaReceiver = require("castv2-client").DefaultMediaReceiver
     mdns = require("mdns-js")
-    browser = new mdns.Mdns(mdns.tcp("googlecast"))
+    browser = mdns.createBrowser(mdns.tcp("googlecast"))
     browser.on "ready", ->
         browser.discover()
 
