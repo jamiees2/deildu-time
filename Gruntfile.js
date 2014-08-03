@@ -145,11 +145,11 @@ module.exports = function (grunt) {
       },
       finalWindowsApp: {
         options: {
-          archive: '<%= config.dist %>/win/DeilduTime.zip'
+          archive: '<%= config.dist %>/DeilduTime.zip'
         },
         files: [{
           expand: true,
-          cwd: '<%= config.tmp %>',
+          cwd: '<%= config.dist %>/win/',
           src: ['**']
         }]
       }
@@ -170,7 +170,7 @@ module.exports = function (grunt) {
     },
     exec: {
   		win: {
-  			cmd: '"dist/win/nw.exe" .'
+  			cmd: '"dist/win/DeilduTime.exe" .'
   		},
   		mac: {
   			cmd: 'dist/mac/DeilduTime.app/Contents/MacOS/node-webkit .'
@@ -307,8 +307,9 @@ module.exports = function (grunt) {
     'rename:zipToApp',
     'createWindowsApp',
     'copy:copyTmpToDist'
-    // 'compress:finalWindowsApp'
   ]);
+
+  grunt.registerTask('compress-win', [ 'compress:finalWindowsApp' ]);
 
   grunt.registerTask('dist-mac', [
     'jshint',
