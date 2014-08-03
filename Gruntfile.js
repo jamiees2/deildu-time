@@ -26,6 +26,41 @@ module.exports = function (grunt) {
             '<%= config.tmp %>/*'
           ]
         }]
+      },
+      mac: {
+        files: [{
+          dot: true,
+          src: [
+            '<%= config.dist %>/mac/*',
+          ]
+        }]
+      },
+      win: {
+        files: [{
+          dot: true,
+          src: [
+            '<%= config.dist %>/win/*',
+            '<%= config.tmp %>/*'
+          ]
+        }]
+      },
+      linux: {
+        files: [{
+          dot: true,
+          src: [
+            '<%= config.dist %>/linux/Linux64/*',
+            '<%= config.tmp %>/*'
+          ]
+        }]
+      },
+      linux32: {
+        files: [{
+          dot: true,
+          src: [
+            '<%= config.dist %>/linux/Linux32/*',
+            '<%= config.tmp %>/*'
+          ]
+        }]
       }
     },
     jshint: {
@@ -39,7 +74,15 @@ module.exports = function (grunt) {
         files: [{
           expand: true,
           cwd: '<%= config.app %>',
-          dest: '<%= config.dist %>/app.nw',
+          dest: '<%= config.dist %>/linux/Linux64/app.nw',
+          src: '**'
+        }]
+      },
+      appLinux32: {
+        files: [{
+          expand: true,
+          cwd: '<%= config.app %>',
+          dest: '<%= config.dist %>/linux/Linux32/app.nw',
           src: '**'
         }]
       },
@@ -47,18 +90,18 @@ module.exports = function (grunt) {
         files: [{
           expand: true,
           cwd: '<%= config.app %>',
-          dest: '<%= config.dist %>/node-webkit.app/Contents/Resources/app.nw',
+          dest: '<%= config.dist %>/mac/node-webkit.app/Contents/Resources/app.nw',
           src: '**'
         }, {
           expand: true,
           cwd: '<%= config.resources %>/mac/',
-          dest: '<%= config.dist %>/node-webkit.app/Contents/',
+          dest: '<%= config.dist %>/mac/node-webkit.app/Contents/',
           filter: 'isFile',
           src: '*.plist'
         }, {
           expand: true,
           cwd: '<%= config.resources %>/mac/',
-          dest: '<%= config.dist %>/node-webkit.app/Contents/Resources/',
+          dest: '<%= config.dist %>/mac/node-webkit.app/Contents/Resources/',
           filter: 'isFile',
           src: '*.icns'
         }]
@@ -67,7 +110,7 @@ module.exports = function (grunt) {
         files: [{
           expand: true,
           cwd: '<%=config.resources %>/node-webkit/MacOS',
-          dest: '<%= config.dist %>/',
+          dest: '<%= config.dist %>/mac/',
           src: '**'
         }]
       },
@@ -84,7 +127,7 @@ module.exports = function (grunt) {
         files: [{
           expand: true,
           cwd: '<%= config.tmp %>',
-          dest: '<%= config.dist %>/',
+          dest: '<%= config.dist %>/win/',
           src: '**'
         }]
       }
@@ -102,7 +145,7 @@ module.exports = function (grunt) {
       },
       finalWindowsApp: {
         options: {
-          archive: '<%= config.dist %>/DeilduTime.zip'
+          archive: '<%= config.dist %>/win/DeilduTime.zip'
         },
         files: [{
           expand: true,
@@ -114,8 +157,8 @@ module.exports = function (grunt) {
     rename: {
       app: {
         files: [{
-          src: '<%= config.dist %>/node-webkit.app',
-          dest: '<%= config.dist %>/DeilduTime.app'
+          src: '<%= config.dist %>/mac/node-webkit.app',
+          dest: '<%= config.dist %>/mac/DeilduTime.app'
         }]
       },
       zipToApp: {
@@ -126,40 +169,42 @@ module.exports = function (grunt) {
       }
     },
     exec: {
-		win: {
-			cmd: '"build/cache/win/<%= nodewebkit.options.version %>/nw.exe" .'
-		},
-		mac: {
-			cmd: 'dist/DeilduTime.app/Contents/MacOS/node-webkit .'
-		},
-		linux32: {
-			cmd: '"build/cache/linux32/<%= nodewebkit.options.version %>/nw" .'
-		},
-		linux64: {
-			cmd: '"build/cache/linux64/<%= nodewebkit.options.version %>/nw" .'
-		},
-		// createDmg: {
-		// 	cmd: 'dist/mac/yoursway-create-dmg/create-dmg --volname "TorrenTV ' + currentVersion + '" --background ./dist/mac/background.png --window-size 480 540 --icon-size 128 --app-drop-link 240 370 --icon "TorrenTV" 240 110 ./build/releases/TorrenTV/mac/TorrenTV-' + currentVersion + '-Mac.dmg ./build/releases/TorrenTV/mac/'
-		// },
-		// createWinInstall: {
-		// 	cmd: 'makensis dist/windows/installer.nsi'
-		// }
-	},
+  		win: {
+  			cmd: '"dist/win/nw.exe" .'
+  		},
+  		mac: {
+  			cmd: 'dist/mac/DeilduTime.app/Contents/MacOS/node-webkit .'
+  		},
+  		linux32: {
+  			cmd: '"dist/linux/Linux32/nw" .'
+  		},
+  		linux64: {
+  			cmd: '"dist/linux/Linux64/nw" .'
+  		},
+  		// createDmg: {
+  		// 	cmd: 'dist/mac/yoursway-create-dmg/create-dmg --volname "TorrenTV ' + currentVersion + '" --background ./dist/mac/background.png --window-size 480 540 --icon-size 128 --app-drop-link 240 370 --icon "TorrenTV" 240 110 ./build/releases/TorrenTV/mac/TorrenTV-' + currentVersion + '-Mac.dmg ./build/releases/TorrenTV/mac/'
+  		// },
+  		// createWinInstall: {
+  		// 	cmd: 'makensis dist/windows/installer.nsi'
+  		// }
+  	},
   });
 
   grunt.registerTask('chmod', 'Add lost Permissions.', function () {
     var fs = require('fs');
-    fs.chmodSync('dist/DeilduTime.app/Contents/Frameworks/node-webkit Helper EH.app/Contents/MacOS/node-webkit Helper EH', '555');
-    fs.chmodSync('dist/DeilduTime.app/Contents/Frameworks/node-webkit Helper NP.app/Contents/MacOS/node-webkit Helper NP', '555');
-    fs.chmodSync('dist/DeilduTime.app/Contents/Frameworks/node-webkit Helper.app/Contents/MacOS/node-webkit Helper', '555');
-    fs.chmodSync('dist/DeilduTime.app/Contents/MacOS/node-webkit', '555');
+    fs.chmodSync('dist/mac/DeilduTime.app/Contents/Frameworks/node-webkit Helper EH.app/Contents/MacOS/node-webkit Helper EH', '555');
+    fs.chmodSync('dist/mac/DeilduTime.app/Contents/Frameworks/node-webkit Helper NP.app/Contents/MacOS/node-webkit Helper NP', '555');
+    fs.chmodSync('dist/mac/DeilduTime.app/Contents/Frameworks/node-webkit Helper.app/Contents/MacOS/node-webkit Helper', '555');
+    fs.chmodSync('dist/mac/DeilduTime.app/Contents/MacOS/node-webkit', '555');
   });
 
   grunt.registerTask('createLinuxApp', 'Create linux distribution.', function (version) {
     var done = this.async();
     var childProcess = require('child_process');
     var exec = childProcess.exec;
-    exec('mkdir -p ./dist; cp resources/node-webkit/'+ version +'/nw.pak dist/ && cp resources/node-webkit/'+ version +'/nw dist/node-webkit', function (error, stdout, stderr) {
+    exec('mkdir -p ./dist/linux' + version +
+      '; cp resources/node-webkit/'+ version +'/nw.pak dist/linux' + version + 
+      ' && cp resources/node-webkit/'+ version +'/nw dist/linux' + version + '/node-webkit', function (error, stdout, stderr) {
       var result = true;
       if (stdout) {
         grunt.log.write(stdout);
@@ -242,21 +287,21 @@ module.exports = function (grunt) {
 
   grunt.registerTask('dist-linux', [
     'jshint',
-    'clean:dist',
+    'clean:linux',
     // 'copy:appLinux',
     'createLinuxApp:Linux64'
   ]);
 
   grunt.registerTask('dist-linux32', [
     'jshint',
-    'clean:dist',
-    // 'copy:appLinux',
+    'clean:linux32',
+    // 'copy:appLinux32',
     'createLinuxApp:Linux32'
   ]);
 
   grunt.registerTask('dist-win', [
     'jshint',
-    'clean:dist',
+    'clean:win',
     'copy:copyWinToTmp',
     'compress:appToTmp',
     'rename:zipToApp',
@@ -267,7 +312,7 @@ module.exports = function (grunt) {
 
   grunt.registerTask('dist-mac', [
     'jshint',
-    'clean:dist',
+    'clean:mac',
     'copy:webkit',
     'copy:appMacos',
     'rename:app',
