@@ -59,11 +59,10 @@ exports.startChromecast = (callback) ->
         browser.discover()
 
     browser.on "update", (device) ->
-        console.log("found device #{device.name} at #{device.addresses[0]}:#{device.port}")
+        console.log("found device #{device.type[0].name} at #{device.addresses[0]}:#{device.port}")
         callback
-            name: device.name
+            name: device.type[0].name
             play: (href, play_callback) ->
-                browser.shutdown()
                 client = new Client()
                 client.connect device.addresses[0], ->
                     console.log "connected, launching app ..."
