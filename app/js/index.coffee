@@ -81,9 +81,9 @@ win.on 'close', ->
 
 App.diehard = require('diehard')
 
-App.diehard.register (signal, done) ->
-    fs.appendFileSync("/tmp/debug.txt", "Exit! #{signal}\n")
-    done()
+# App.diehard.register (signal, done) ->
+#     fs.appendFileSync("/tmp/debug.txt", "Exit! #{signal}\n")
+#     done()
 App.diehard.listen()
 
 App.vent.on 'window:close', ->

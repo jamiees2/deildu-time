@@ -24,6 +24,7 @@
     "mdns-js": "^0.1.0",
     "mime": "^1.2.11",
     "network-address": "0.0.4",
+    "node-uuid": "^1.4.1",
     "numeral": "^1.5.3",
     "parse-torrent": "^1.6.0",
     "peerflix": "git+ssh://git@github.com:jamiees2/peerflix.git#rar2",

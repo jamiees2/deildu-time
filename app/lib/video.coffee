@@ -105,6 +105,7 @@ exports.startChromecast = (callback) ->
 UPNPServer = require('upnpserver')
 HTTPRepository = require('upnpserver/lib/httpRepository')
 upnpServer = null
+upnp_uuid = window.localStorage['upnp.uuid'] || (window.localStorage['upnp.uuid'] = require('node-uuid').v4())
 exports.startUPNP = (files, port, name, engine, callback) ->
     class Entry
         constructor: (opts, index) ->
@@ -146,7 +147,7 @@ exports.startUPNP = (files, port, name, engine, callback) ->
         upnpServer=new UPNPServer({ 
             log: false,
             name: "Deildu Time",
-            uuid: '5c39c8f8-8a75-4850-a90a-246ac6dd0734'
+            uuid: upnp_uuid
         }, [
             repo
         ]);
