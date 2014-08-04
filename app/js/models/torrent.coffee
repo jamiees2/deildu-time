@@ -10,7 +10,11 @@ class Torrent extends Backbone.Model
 			console.log e
 		@set(_.pick(torrent,'infoHash','name','private','created','announce'))
 		# @engine = opts.engine
-		@engine = peerflix(opts.torrent,{dht: false, id: '01234567890123456789'})
+		@opts = 
+			dht: false
+			id: '01234567890123456789'
+		@opts.tmp = localStorage['downloads'] if localStorage['downloads']?
+		@engine = peerflix(opts.torrent, @opts)
 		@hotswaps = 0
 		@verified = 0
 		@invalid = 0

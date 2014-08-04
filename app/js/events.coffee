@@ -1,6 +1,11 @@
+fs = require "fs"
+path = require "path"
+rimraf = require "rimraf"
+
 
 gui = window.require('nw.gui')
 win = gui.Window.get()
+
 
 App.vent.on 'window:close', ->
     win.close()
@@ -12,7 +17,15 @@ App.vent.on 'navigate', (target) ->
 
 App.vent.on 'torrent:add', (torrent) ->
     App.torrentlist.add({torrent: torrent})
-    App.vent.trigger('navigate:torrentlist')
+    App.vent.trigger('navigate','torrentlist')
+
+App.vent.on 'downloads:clean', ->
+    dir = localStorage['downloads']
+    fs.readdir dir, (err, files) ->
+        return console.log(err) if err
+        files.forEach (file) ->
+            rimraf(path.join(dir,file), ->)
+
 
 windows = {}
 App.vent.on 'open:about', ->

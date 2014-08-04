@@ -3,43 +3,17 @@ gui = global.window.nwDispatcher.requireNwGui()
 
 menubar = new gui.Menu(type: "menubar")
 if process.platform is "darwin"
-    
-    menubar.append new gui.MenuItem(
-      label: "Deildu Time"
-      submenu: require('./main_mac')
-    )
-    
-    menubar.append new gui.MenuItem(
-      label: "File"
-      submenu: require('./file')
-    )
-    menubar.append new gui.MenuItem(
-      label: "Edit"
-      submenu: require('./edit')
-    )
+    menubar.createMacBuiltin("Deildu Time");
+    require('./main_mac')(menubar.items[0].submenu)
     # menubar.append new gui.MenuItem(
-    #   label: "Developer"
-    #   submenu: require('./developer')
+    # 	label: "Help"
+    # 	submenu: require('./help')
     # )
-    # _window = new gui.Menu()
-    # _window.append new gui.MenuItem(
-    #   label: "Test 005"
-    #   click: ->
-    #     console.log "Clicked 'Test 005'"
-    #     return
-
-    #   key: ""
-    #   modifiers: ""
-    # )
-    # _window.append new gui.MenuItem(type: "separator")
-    # menubar.append new gui.MenuItem(
-    #   label: "Window"
-    #   submenu: _window
-    # )
-    menubar.append new gui.MenuItem(
-    	label: "Help"
-    	submenu: require('./help')
-    )
+else
+	menubar.append new gui.MenuItem(
+		label: "File"
+		submenu: require('./file')
+	)
 gui.Window.get().menu = menubar
   # _iframe = ""
   # _iframe += "<iframe class='tabs-pane active'"

@@ -1,8 +1,10 @@
 peerflix = require('peerflix')
 fs = require('fs')
 path = require('path')
+os = require('os')
 address = require('network-address')
 video = require('../lib/video')
+deildu = require('../lib/deildu')
 gui = window.require('nw.gui')
 win = gui.Window.get()
 
@@ -12,6 +14,8 @@ require('./menus') # Initialize the menu
 
 
 process.env['PATH'] += ";#{path.dirname(process.execPath)}" if process.platform is "win32"
+tmp = if fs.existsSync('/tmp') then '/tmp' else os.tmpDir()
+localStorage['downloads'] =  path.join(tmp,"deildu-time") unless localStorage['downloads']?
 
 App = global.App = new Backbone.Marionette.Application();
 
@@ -31,7 +35,7 @@ App.container = container = new Backbone.Marionette.LayoutView
             regionClass: EventRegion
         player: "#player"
 
-
+Alert = require('./models/alert').Alert
 ItemCollection = require('./collections/items').ItemCollection
 TorrentCollection = require('./collections/torrents').TorrentCollection
 ListView = require('./views/list').ListView
@@ -39,23 +43,39 @@ HeaderView = require('./views/header').HeaderView
 MenuView = require('./views/menu').MenuView
 TorrentsView = require('./views/torrents').TorrentsView
 PlayerView = require('./views/player').PlayerView
+AlertView = require('./views/alert').AlertView
 
-App.itemlist = new ItemCollection
 App.torrentlist = new TorrentCollection
 
 
 App.views = {}
-App.views.itemlist = new ListView
-    collection: App.itemlist
 App.views.torrentlist = new TorrentsView
     collection: App.torrentlist
-App.views.header = new HeaderView
+
 App.views.menu = new MenuView
+# App.views.header = new HeaderView
 
 
-container.header.show App.views.header
-container.menu.show App.views.menu
-container.content.show App.views.itemlist
+# container.header.show App.views.header
+
+start = ->
+    deildu.login( {
+        username: localStorage['deildu.username']
+        password: localStorage['deildu.password']
+    }, (err) ->
+        if err
+            console.log err
+            alert = new AlertView({model: new Alert({error: err})})
+            alert.on 'retry', start
+            container.content.show alert
+            return
+        App.itemlist = new ItemCollection
+        App.views.itemlist = new ListView
+            collection: App.itemlist
+        container.menu.show App.views.menu
+        container.content.show App.views.itemlist
+    )
+start()
 # container.player.show new PlayerView player: {}
 
 
