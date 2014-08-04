@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Options</title>
+    <link rel="stylesheet" href="../vendor/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="../vendor/font-awesome/css/font-awesome.min.css" />
+    <link rel="stylesheet" href="../css/main.css" />
+</head>
+<body>
+	<div class="container" id="container">
+		<form role="form">
+		  <div class="form-group">
+		    <label for="username">Your deildu.net username</label>
+		    <input type="text" class="form-control" id="username" placeholder="Enter username">
+		  </div>
+		  <div class="form-group">
+		    <label for="password">Your deildu.net password</label>
+		    <input type="password" class="form-control" id="password" placeholder="Password">
+		  </div>
+		  <div class="form-group">
+		    <label for="downloads">Downloads directory</label>
+		    <input type="file" id="downloads" nwdirectory>
+		    <p class="help-block">Where should i download the files?</p>
+		  </div>
+		  <button type="submit" class="btn btn-default">Submit</button>
+		</form>
+	</div>
+	<script src="../vendor/jquery/dist/jquery.js"></script>
+	<script>
+		$(function(){
+			$("#username").val(global.localStorage['deildu.username']);
+			$("#password").val(global.localStorage['deildu.password']);
+			$("#downloads").on('change', function(){
+				global.localStorage['downloads'] = $(this).val();
+			});
+			$("#username").on('change', function(){
+				global.localStorage['deildu.username'] = $(this).val();
+			});
+			$("#password").on('change', function(){
+				global.localStorage['deildu.password'] = $(this).val();
+			});
+			$("form").on("submit",function(e){
+				e.preventDefault();
+				require('nw.gui').Window.get().close();
+			});
+		});
+	</script>
+</body>
+</html>

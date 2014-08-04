@@ -3,11 +3,12 @@ fs = require('fs')
 path = require('path')
 address = require('network-address')
 video = require('../lib/video')
-nwgui = global.window.nwDispatcher.requireNwGui()
-win = nwgui.Window.get()
+gui = window.require('nw.gui')
+win = gui.Window.get()
 
-key 'command+d, ctrl+d', ->
-    win.showDevTools()
+
+require('./menus') # Initialize the menu
+
 
 
 process.env['PATH'] += ";#{path.dirname(process.execPath)}" if process.platform is "win32"
@@ -58,21 +59,7 @@ container.content.show App.views.itemlist
 # container.player.show new PlayerView player: {}
 
 
-
-
-App.navigation_options = 
-    preventDestroy: true
-App.vent.on 'navigate:list', ->
-    container.content.show App.views.itemlist, App.navigation_options
-
-App.vent.on 'navigate:torrentlist', ->
-    container.content.show App.views.torrentlist, App.navigation_options
-
-App.vent.on 'torrent:add', (torrent) ->
-    App.torrentlist.add({torrent: torrent})
-    App.vent.trigger('navigate:torrentlist')
-
-
+require('./events') # Initialize the events
 
 # process.on("uncaughtException", (err) -> alert("error: " + err) );
 win.on 'close', ->
@@ -86,7 +73,4 @@ App.diehard = require('diehard')
 #     done()
 App.diehard.listen()
 
-App.vent.on 'window:close', ->
-    win.close()
-App.vent.on 'window:close:force', ->
-    win.close(true)
+

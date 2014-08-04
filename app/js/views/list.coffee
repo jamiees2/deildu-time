@@ -42,7 +42,7 @@ class ListView extends Backbone.Marionette.CompositeView
         "searchInput": "#search-input"
     events:
         "click #search-btn": "search"
-        "click #controls a": "control"
+        "click #list-controls a": "control"
         "keydown #search-input": "checkEnter"
     initialize: ->
         $(window).on('scroll',@load)

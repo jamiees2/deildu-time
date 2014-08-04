@@ -2,22 +2,32 @@ class MenuView extends Backbone.Marionette.ItemView
     template: _.template("""
         <div class="row">
             <div class="col-xs-12">
-            	<ul class="nav nav-pills">
-					<li class="active"><a href="#" data-href="list"><i class="fa fa-home"></i> Home</a></li>
-					<li><a href="#" data-href="torrentlist"><i class="fa fa-cloud-download"></i> Downloads</a></li>
-				</ul>
-			</div>
+                <ul class="nav nav-pills">
+                    <li class="active"><a href="#" data-href="itemlist"><i class="fa fa-home"></i> Home</a></li>
+                    <li><a href="#" data-href="torrentlist"><i class="fa fa-cloud-download"></i> Downloads</a></li>
+                </ul>
+            </div>
         </div>""")
     events:
-    	"click .nav a": "navigate"
+        "click .nav a": "navigateEl"
     ui:
-    	tabs: ".nav li"
-    navigate: (e) ->
-    	$this = @$(e.currentTarget)
-    	@ui.tabs.removeClass("active")
-    	$this.parent().addClass "active"
+        tabs: ".nav li"
+    initialize: ->
+        @on 'navigate', @navigate
+    navigateEl: (e) ->
+        $this = @$(e.currentTarget)
+        @navigate($this.attr('data-href'))
+    navigate: (target) ->
+        @ui.tabs.removeClass("active")
+        @$("a[data-href=#{target}]").parent().addClass "active"
 
-    	App.vent.trigger("navigate:#{$this.attr('data-href')}")
+        # @trigger("navigate:#{}")
+        App.container.content.show App.views[target], { preventDestroy: true }
+
+
+
+
+    
 
 
 exports.MenuView = MenuView
