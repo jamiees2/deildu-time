@@ -12,6 +12,8 @@ class TorrentsView extends Backbone.Marionette.CompositeView
                 <select disabled="disabled" id="playerSelect">
                     <option value="vlc">VLC</option>
                     <option value="airplay">AirPlay</option>
+                    <option value="chromecast">Chromecast</option>
+                    <option value="upnp">UPnP</option>
                 </select>
             </div>
             <div class="col-xs-12">
@@ -19,9 +21,12 @@ class TorrentsView extends Backbone.Marionette.CompositeView
                     <thead><tr>
                         <th>Name</th>
                         <th>Peers</th>
-                        <th>Speed</th>
-                        <th>Upload Speed</th>
-                        <th>Downloaded</th>
+                        <th>DL</th>
+                        <th>UL</th>
+                        <th>DLed</th>
+                        <th></th>
+                        <th></th>
+                        <th></th>
                         <th></th>
                         <th></th>
                         <th></th>
@@ -39,14 +44,14 @@ class TorrentsView extends Backbone.Marionette.CompositeView
         "change #playerSelect": "changePlayer"
 
     toggleAutoPlay: ->
-        App.autoPlay = @ui.autoPlay.is(':checked')
+        App.autoPlay = localStorage['autoPlay'] = @ui.autoPlay.is(':checked')
         @ui.playerSelect.prop('disabled',!App.autoPlay)
         @changePlayer()
     changePlayer: ->
-        App.player = @ui.playerSelect.find(':selected').val()
+        App.player = localStorage['player'] = @ui.playerSelect.find(':selected').val()
     onDomRefresh: ->
-        App.autoPlay = true unless App.autoPlay?
-        App.player = "vlc" unless App.player?
+        App.autoPlay = if localStorage['autoPlay']? then JSON.parse(localStorage['autoPlay']) else false
+        App.player = if localStorage['player']? then localStorage['player'] else "vlc"
         @ui.autoPlay.prop('checked', App.autoPlay)
         @ui.playerSelect.find("option[value=#{App.player}]").prop('selected',true)
         @toggleAutoPlay()

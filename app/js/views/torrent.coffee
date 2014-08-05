@@ -3,6 +3,7 @@ video = require('../../lib/video')
 PlayerView = require('./player').PlayerView
 DeviceCollection = require('../collections/devices').DeviceCollection
 DevicesView = require('./devices').DevicesView
+clipboard = window.require('nw.gui').Clipboard.get()
 
 bytes = (num) ->
     return numeral(num).format('0.0b')
@@ -14,6 +15,9 @@ class TorrentView extends Backbone.Marionette.ItemView
         <td id="speed"></td>
         <td id="upload-speed"></td>
         <td id="downloaded"></td>
+        <td><a href="#" id="stop"><i class="fa fa-2x fa-circle-o-notch"></i></a></td>
+        <td><a href="#" id="remove"><i class="fa fa-2x fa-trash-o"></i></a></td>
+        <td><a href="#" id="copy"><i class="fa fa-2x fa-files-o"></i></a></td>
         <td><a href="#" data-player="vlc" class="players">VLC</a></td>
         <td><a href="#" data-player="airplay" class="players"><img class="media-icon" src="img/airplay.png" alt="AirPlay" /></a></td>
         <td><a href="#" data-player="chromecast" class="players"><img class="media-icon" src="img/chromecast.png" alt="Chromecast" /></a></td>
@@ -27,6 +31,9 @@ class TorrentView extends Backbone.Marionette.ItemView
         "players": ".players"
     events:
         "click td a[data-player]": "clickPlay"
+        "click #remove": "removeFiles"
+        "click #stop": "stopDownloading"
+        "click #copy": "copyHref"
     modelEvents: 
         "status:update": "statusUpdate"
         "server:ready": "serverReady"
@@ -39,7 +46,7 @@ class TorrentView extends Backbone.Marionette.ItemView
 
     serverReady: ->
         @ui.players.removeClass('hide')
-        if App.autoPlay and false
+        if App.autoPlay
             @startPlaying(App.player)
     clickPlay: (e) ->
         $this = @$(e.currentTarget)
@@ -71,5 +78,16 @@ class TorrentView extends Backbone.Marionette.ItemView
             video.startChromecast (device) ->
                 console.log device
                 deviceCollection.add(device)
+
+    removeFiles: (e) ->
+        e.preventDefault()
+        @model.trigger "remove", ->
+            console.log "files removed"
+    stopDownloading: (e) ->
+        e.preventDefault()
+        @model.trigger "stop", ->
+            console.log "stopped"
+    copyHref: (e) ->
+        clipboard.set(@model.get('remoteHref'), 'text');
 
 exports.TorrentView = TorrentView

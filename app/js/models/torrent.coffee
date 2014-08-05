@@ -18,6 +18,7 @@ class Torrent extends Backbone.Model
 		@hotswaps = 0
 		@verified = 0
 		@invalid = 0
+		@listening = false
 
 		@engine.on 'verify', @verify
 		@engine.on 'invalid-piece', @invalid_piece
@@ -26,6 +27,9 @@ class Torrent extends Backbone.Model
 		@engine.on 'idle', @idle
 		@engine.on 'ready', @engineReady
 		@engine.server.on 'listening', @serverReady
+
+		@on "remove", @removeFiles
+		@on "stop", @stopDownloading
 	engineReady: =>
 		console.log "Engine ready"
 		@set
@@ -37,6 +41,7 @@ class Torrent extends Backbone.Model
 		@interval = setInterval(@updateStatus,250)
 
 	serverReady: =>
+		@listening = true
 		@trigger('server:ready')
 	updateStatus: =>
 		unchoked = @engine.swarm.wires.filter(@active)
@@ -61,6 +66,15 @@ class Torrent extends Backbone.Model
 		@hotswaps++
 
 	peer: =>
+
+	removeFiles: (cb) ->
+		cb = cb or ->
+		@engine.remove(cb)
+
+	stopDownloading: (cb) ->
+		cb = cb or ->
+		@engine.server.close() if @listening
+		@engine.destroy(cb)
 
 
 
