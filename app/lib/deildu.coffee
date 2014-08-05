@@ -86,7 +86,7 @@ parseBrowse = (body) ->
                 name: td[1].text().trim()
                 file_count: td[3].text().trim()
                 # ignore comments
-                date: td[5].text().trim()
+                date: td[5].html().replace(/\<br\>|\s/g," ").trim()
                 size: td[6].text().trim()
                 # ignore users downloaded
                 seeders: td[8].text().trim()

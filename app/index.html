@@ -19,11 +19,14 @@
 	<script src="vendor/backbone/backbone.js"></script>
 	<script src="vendor/marionette/lib/backbone.marionette.js"></script>
 	<script src="vendor/keymaster/keymaster.js"></script>
+	<script src="vendor/moment/min/moment-with-locales.min.js"></script>
 	<script>
 		global.$ = $;
 		global.Backbone = Backbone;
 		global._ = _;
 		global.key = key;
+		// global.moment = moment;
+		global.moment.locale("en-gb");
 
 		// Make the localStorage object global, for multiple windows
 		var _ref;

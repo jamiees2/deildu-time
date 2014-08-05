@@ -10,6 +10,7 @@ class ItemCollection extends Backbone.Collection
         @on "search", @search
         @on "home", @home
         @on "reload", @load
+        @on "sorting", @updateSorting
         # App.vent.on "search", @search
     loadPage: ->
         @opts.page = (@opts.page || 0 ) + 1
@@ -36,4 +37,15 @@ class ItemCollection extends Backbone.Collection
         @opts.cat = 0
         @opts.page = 0
         @load()
+
+    updateSorting: (order) ->
+        return if not order?
+        if order.sort is ""
+            delete @opts.sort
+            delete @opts.type
+        else
+            @opts.sort = order.sort
+            @opts.type = order.type
+            console.log order
+        return @load()
 exports.ItemCollection = ItemCollection

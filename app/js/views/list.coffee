@@ -6,9 +6,28 @@ class ListView extends Backbone.Marionette.CompositeView
     template: _.template("""
         <div class="row">
             <div class="col-xs-6">
-                <ul class="nav nav-pills" id="list-controls">
+                <ul class="nav nav-pills pull-left" id="list-controls">
                   <li><a href="#" data-trigger="home"><i class="fa fa-2x fa-home"></i></a></li>
                   <li><a href="#" data-trigger="reload"><i class="fa fa-2x fa-refresh"></i></a></li>
+                </ul>
+                <ul class="nav nav-pills pull-right" id="list-sorting">
+                  <li>
+                    <select class="form-control" id="sort">
+                        <option value="" selected>-</option>
+                        <option value="name">Name</option>
+                        <option value="numfiles">File count</option>
+                        <option value="seeders">Seeders</option>
+                        <option value="leechers">Leechers</option>
+                        <option value="size">Size</option>
+                        <option value="added">Date</option>
+                    </select>
+                  </li>
+                  <li>
+                    <select class="form-control" id="order">
+                        <option value="desc">Descending</option>
+                        <option value="asc">Ascending</option>
+                    </select>
+                  </li>
                 </ul>
             </div>
             <div class="col-xs-6">
@@ -23,13 +42,15 @@ class ListView extends Backbone.Marionette.CompositeView
         <div class="row">
             <img class="center-block loading hide" id="loading" src="img/loading.gif" />
             <div class="col-xs-12">
-                <table class='table table-bordered table-condensed table-hover'>
+                <table class='table table-bordered table-condensed table-hover table-striped'>
                     <thead><tr>
                         <th>Name</th>
                         <th>File Count</th>
                         <th>Category</th>
                         <th>Seeders</th>
                         <th>Leechers</th>
+                        <th>File Size</th>
+                        <th>Date</th>
                     </tr></thead>
                     <tbody></tbody>
                 </table>
@@ -44,6 +65,7 @@ class ListView extends Backbone.Marionette.CompositeView
         "click #search-btn": "search"
         "click #list-controls a": "control"
         "keydown #search-input": "checkEnter"
+        "change #list-sorting select": "changeSorting"
     initialize: ->
         $(window).on('scroll',@load)
         @collection.on('ajax:loading',@loading)
@@ -81,6 +103,8 @@ class ListView extends Backbone.Marionette.CompositeView
 
     control: (e) ->
         @collection.trigger @$(e.currentTarget).attr('data-trigger')
+    changeSorting: (e) ->
+        @collection.trigger 'sorting', { sort: @$("#sort option:selected").val(), type: @$("#order").val() }
         
     checkEnter: (e) ->
         if e.keyCode is 13
