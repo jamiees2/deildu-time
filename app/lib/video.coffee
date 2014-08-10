@@ -81,9 +81,9 @@ exports.startChromecast = (callback) ->
                             console.log status
                         play_callback 
                             stop: (cb) ->
-                                player.stop ->
-                                    client.stop player, ->
-                                        cb() if cb
+                                # player.stop ->
+                                client.stop player, ->
+                                    cb() if cb
                             play: ->
                                 player.play ->
                             pause: ->
