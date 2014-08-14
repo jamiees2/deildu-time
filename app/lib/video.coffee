@@ -147,7 +147,8 @@ exports.startUPNP = (files, port, name, engine, callback) ->
         upnpServer=new UPNPServer({ 
             log: false,
             name: "Deildu Time",
-            uuid: upnp_uuid
+            uuid: upnp_uuid,
+            dlnaSupport: true
         }, [
             repo
         ]);
